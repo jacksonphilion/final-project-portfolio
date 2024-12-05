@@ -1,0 +1,205 @@
+[
+  {
+    "objectID": "more.html",
+    "href": "more.html",
+    "title": "More",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "more.html#all-references",
+    "href": "more.html#all-references",
+    "title": "More",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "more.html#acknowledgements",
+    "href": "more.html#acknowledgements",
+    "title": "More",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nhere"
+  },
+  {
+    "objectID": "mcu-design.html#new-peripherals",
+    "href": "mcu-design.html#new-peripherals",
+    "title": "MCU",
+    "section": "New Peripherals",
+    "text": "New Peripherals\nThis section describes how we used the new peripherals in our system, and some of the key points that we discovered with each.\n\nADC\nhere\n\n\nDMA\nhere"
+  },
+  {
+    "objectID": "mcu-design.html#system-diagram",
+    "href": "mcu-design.html#system-diagram",
+    "title": "MCU",
+    "section": "System Diagram",
+    "text": "System Diagram\nThe draw.io diagram and a brief description here. Maybe call out the parts that we can adjust: the BUFFER_SIZE and ADC divisor, which affect sampling frequency and possible outputs."
+  },
+  {
+    "objectID": "results.html",
+    "href": "results.html",
+    "title": "Results",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "results.html#overall-performance",
+    "href": "results.html#overall-performance",
+    "title": "Results",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "results.html#simulation-and-oscilloscope-results",
+    "href": "results.html#simulation-and-oscilloscope-results",
+    "title": "Results",
+    "section": "Simulation and Oscilloscope Results",
+    "text": "Simulation and Oscilloscope Results\nhere"
+  },
+  {
+    "objectID": "results.html#demonstration",
+    "href": "results.html#demonstration",
+    "title": "Results",
+    "section": "Demonstration",
+    "text": "Demonstration\nhere"
+  },
+  {
+    "objectID": "fpga-design.html",
+    "href": "fpga-design.html",
+    "title": "FPGA",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "fpga-design.html#summary",
+    "href": "fpga-design.html#summary",
+    "title": "FPGA",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "fpga-design.html#lcd-screen",
+    "href": "fpga-design.html#lcd-screen",
+    "title": "FPGA",
+    "section": "LCD Screen",
+    "text": "LCD Screen\nhere"
+  },
+  {
+    "objectID": "fpga-design.html#hdl-block-diagram",
+    "href": "fpga-design.html#hdl-block-diagram",
+    "title": "FPGA",
+    "section": "HDL Block Diagram",
+    "text": "HDL Block Diagram\nhere"
+  },
+  {
+    "objectID": "fpga-design.html#state-transition-diagrams",
+    "href": "fpga-design.html#state-transition-diagrams",
+    "title": "FPGA",
+    "section": "State Transition Diagrams",
+    "text": "State Transition Diagrams\nhere"
+  },
+  {
+    "objectID": "team.html",
+    "href": "team.html",
+    "title": "Team",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "team.html#zhian-zhou",
+    "href": "team.html#zhian-zhou",
+    "title": "Team",
+    "section": "",
+    "text": "here"
+  },
+  {
+    "objectID": "team.html#jackson-philion",
+    "href": "team.html#jackson-philion",
+    "title": "Team",
+    "section": "Jackson Philion",
+    "text": "Jackson Philion\nhere"
+  },
+  {
+    "objectID": "documentation.html",
+    "href": "documentation.html",
+    "title": "Documentation",
+    "section": "",
+    "text": "This section contains a list of our new hardware. Each section contains a short descriptions of how we chose the part and where in the system it was used.\n\n\nhere. Reference to the FPGA design section.\n\n\n\nhere\n\n\n\nhere"
+  },
+  {
+    "objectID": "documentation.html#new-hardware",
+    "href": "documentation.html#new-hardware",
+    "title": "Documentation",
+    "section": "",
+    "text": "This section contains a list of our new hardware. Each section contains a short descriptions of how we chose the part and where in the system it was used.\n\n\nhere. Reference to the FPGA design section.\n\n\n\nhere\n\n\n\nhere"
+  },
+  {
+    "objectID": "documentation.html#schematics",
+    "href": "documentation.html#schematics",
+    "title": "Documentation",
+    "section": "Schematics",
+    "text": "Schematics\nOur schematic may be found in Figure 1 below. It consists of 3 main parts: the E155 development board on the left, the LCD output circuit on the top right, and the microphone and amplification circuits on the bottom right.\n\n\n\n\n\n\nFigure 1: Schematic"
+  },
+  {
+    "objectID": "documentation.html#github-link",
+    "href": "documentation.html#github-link",
+    "title": "Documentation",
+    "section": "Github Link",
+    "text": "Github Link\nhere"
+  },
+  {
+    "objectID": "documentation.html#bill-of-materials",
+    "href": "documentation.html#bill-of-materials",
+    "title": "Documentation",
+    "section": "Bill Of Materials",
+    "text": "Bill Of Materials\nhere"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "E155 Final Project Portfolio Website",
+    "section": "",
+    "text": "Abstract goes here"
+  },
+  {
+    "objectID": "index.html#abstract",
+    "href": "index.html#abstract",
+    "title": "E155 Final Project Portfolio Website",
+    "section": "",
+    "text": "Abstract goes here"
+  },
+  {
+    "objectID": "index.html#video-demonstration",
+    "href": "index.html#video-demonstration",
+    "title": "E155 Final Project Portfolio Website",
+    "section": "Video Demonstration",
+    "text": "Video Demonstration\nUpdate Below Video"
+  },
+  {
+    "objectID": "index.html#block-diagram",
+    "href": "index.html#block-diagram",
+    "title": "E155 Final Project Portfolio Website",
+    "section": "Block Diagram",
+    "text": "Block Diagram\nBlock Diagram Here"
+  },
+  {
+    "objectID": "index.html#table-of-contents",
+    "href": "index.html#table-of-contents",
+    "title": "E155 Final Project Portfolio Website",
+    "section": "Table of Contents",
+    "text": "Table of Contents\nFind the below sections, we can use ?@sec-documentation and these kinds of crosslinks:\n\n?@sec-docs\n?@sec-Pictures\nEtc…\n\nThis repository contains a suggested structure for the final report."
+  },
+  {
+    "objectID": "index.html#portfolio-contents",
+    "href": "index.html#portfolio-contents",
+    "title": "E155 Final Project Portfolio Website",
+    "section": "Portfolio Contents",
+    "text": "Portfolio Contents\nYour portfolio website should include the following items:\n\nAn overview/home page\n\nA 200-word abstract that summarizes what your project does\nA short video which demonstrates your project in operation\nA block diagram of your system\nA table of contents (e.g., links to other resources on the portfolio website)\n\nA main documentation page\n\nA description of the new hardware used by your project\nSchematics for your system\nA link to the Github repository containing the source code for your project\nA complete bill of materials with item name, part number, quantity, unit price, and total price.\n\nAn FPGA design page\n\nA brief summary of the FPGA design\nA block diagram of the HDL you wrote\nAny accompanying documentation necessary to describe its operation (e.g., state transition diagrams). You do not need to cover nitty gritty details like state transition or output logic tables.\n\nAn MCU design page\n\nA brief summary of what the MCU does\nAny diagrams needed to explain the flow of the MCU code\n\nResults\n\nA discussion of the overall performance of the final system\nAny relevant simulation results or oscilloscope traces\nVideos or photos of the final project or any intermediate build steps.\n\nTeam\n\nA list of the team members with a one sentence bio and links to any relevant personal websites or social media presence. As a bonus, add photos here."
+  },
+  {
+    "objectID": "index.html#notes",
+    "href": "index.html#notes",
+    "title": "E155 Final Project Portfolio Website",
+    "section": "Notes",
+    "text": "Notes\n\nDo not upload video files into your Git repo! They are too big. Instead, upload to external video hosting sites (e.g., YouTube or Vimeo) and embed the HTML. You can directly paste the embed HTML code into your Quarto markdown.\nThink of your front page like a pitch. You’re looking to give the reader a quick summary of what your project is and invite them to check it out in more detail.\nHost the portfolio website using Github pages. The most seamless way is to keep all the Quarto source docs inside a docs folder of your project Github repository and run quarto publish from there to render to Github pages. As a reminder, instructions on how to render can be found here."
+  }
+]
