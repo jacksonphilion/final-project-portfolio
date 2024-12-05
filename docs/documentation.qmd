@@ -1,3 +1,31 @@
 ---
 title: Documentation
 ---
+
+## New Hardware
+
+This section contains a list of our new hardware. Each section contains a short descriptions of how we chose the part and where in the system it was used.
+
+### LCD Screen
+
+here. Reference to the FPGA design section.
+
+### Op Amps
+
+here
+
+### Microphone
+
+here
+
+## Schematics
+
+here
+
+## Github Link
+
+here
+
+## Bill Of Materials
+
+here

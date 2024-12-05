@@ -2,6 +2,32 @@
 title: "E155 Final Project Portfolio Website"
 ---
 
+## Abstract
+
+Abstract goes here
+
+## Video Demonstration
+
+Update Below Video
+
+{{< video https://youtu.be/C9rHem4BoUI >}}
+
+## Block Diagram
+
+Block Diagram Here
+
+## Table of Contents
+
+Find the below sections, we can use @sec-documentation and these kinds of crosslinks:
+
+1. @sec-docs 
+2. @sec-Pictures
+3. Etc...
+
+
+
+
+
 This repository contains a suggested structure for the final report.
 
 ## Portfolio Contents

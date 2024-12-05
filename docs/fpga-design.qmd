@@ -1,3 +1,19 @@
 ---
-title: FPGA Design
+title: FPGA
 ---
+
+## Summary
+
+here
+
+## LCD Screen
+
+here
+
+## HDL Block Diagram
+
+here
+
+## State Transition Diagrams
+
+here

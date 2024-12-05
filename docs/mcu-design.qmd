@@ -1,3 +1,21 @@
 ---
-title: MCU Design
+title: MCU
 ---
+
+## Summary
+
+## New Peripherals
+
+This section describes how we used the new peripherals in our system, and some of the key points that we discovered with each.
+
+### ADC
+
+here
+
+### DMA
+
+here
+
+## System Diagram
+
+The draw.io diagram and a brief description here. Maybe call out the parts that we can adjust: the BUFFER_SIZE and ADC divisor, which affect sampling frequency and possible outputs.
