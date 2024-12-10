@@ -19,4 +19,4 @@ title: More
 
 ## Acknowledgements
 
-We sincerely thank Prof. Brake, our MicroPs professor, for his invaluable guidance and support.
+We sincerely thank Professor Josh Brake, our MicroPs professor, for his invaluable guidance and support throughout this class. Additionally, we would like to thank the class tutors, Neil Chulani, Kavi Dey, and Henry Merrilees for their generous time spent mentoring us students. Finally, we need to thank all the other members of our Fall 2024 edition of E155. Our classmates acted as endless sounding boards, late-night lab partners, debugging assistants, and voices of reason. Finally, a thank you to the engineering staff who helped support us with all of our equipment in the digital lab.

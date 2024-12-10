@@ -6,11 +6,25 @@ title: FPGA
 
 In order to control the LCD screen, which is described in detail within the New Hardware section of Documentation, we chose to create a system of nested FSMs. The following sections describe both of these FSMs in detail, as well as outlining the HDL modules we used to connect the whole system.
 
+I first created the following hand drawn block diagram to outline the modules that I would need to control the LCD and SPI system.
+
+![Hand Drawn HDL Block Diagram](images/hand-drawn-block.jpeg)
+
+From this design, I identified 5 key modules to make:
+
+* A top module, to contain the oscillator and clock divider parts of the system
+* A low level FSM, for the LCD's control of individual commands
+* A mid level controller, to control the order of commands sent to the low level FSM
+* A converter module to switch from frequency to pitch notation
+* Finally, a SPI module to store the incoming data and regulate the system's response to incoming SPI transactions.
+
 ## Top Module
 
 Overall, our top module had prescribed inputs and outputs. We need this unit to read in the SPI data from the MCU, and output the 10-line parallel interface data to control the LCD. The highest level block diagram, describing all the interconnections between the modules described below, may be seen here:
 
 ![Top Level Block Diagram](images/topBlockDiagram.png)
+
+Note that this module was almost entirely a connecting module, containing very little logic. Yet, it does have two key things aside from basic module interconnects. Firstly, this module directly contains the call which instantiates the high frequency oscillator (HFOSC, 48 MHz) and adds a clock divider (which outputs a final frequency of 100 kHz). Secondly, this module contains some unpictured debug logic which can be hooked up to any signal at any time to read out the current state of the system for debugging purposes.
 
 ## Low Level FSM Module
 

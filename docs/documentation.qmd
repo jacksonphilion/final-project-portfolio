@@ -3,8 +3,6 @@ title: Documentation
 number-sections: true
 ---
 
-# Table of Contents
-
 * New Hardware in @sec-new-hardware
     * LCD Screen in @sec-lcd-screen
     * Op Amps in @sec-op-amps
