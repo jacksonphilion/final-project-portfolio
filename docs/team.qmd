@@ -1,11 +1,89 @@
 ---
 title: Team
+format:
+  html:
+    toc: true
+    toc-location: left
+    number-sections: false
 ---
+# Meet the Team
 
-## Zhian Zhou
+```{=html}
+<style>
+.team-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+}
 
-here
+.team-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 300px;
+}
 
-## Jackson Philion
+.headshot img {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-here
+.bio h3 {
+  margin: 10px 0;
+}
+
+.social-links a {
+  margin: 5px;
+  text-decoration: none;
+  color: #007acc;
+  font-weight: bold;
+}
+
+.social-links a:hover {
+  text-decoration: underline;
+}
+</style>
+<div class="team-container">
+
+
+  <!-- Jackson Philion, Member 1 -->
+  <div class="team-member">
+    <div class="headshot">
+      <img src="images/jacksonProfile.jpeg" alt="Jackson Philion Headshot">
+    </div>
+    <div class="bio">
+      <h3>Jackson Philion</h3>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/jacksonphilion/">LinkedIn</a>
+        <a href="https://github.com/jacksonphilion/">GitHub</a>
+        <a href="https://jacksonphilion.github.io/hmc-e155-portfolio/">E155 Website</a>
+      </div>
+      <p>Jackson is an electrical engineering student who's passionate about the intersection between hardware engineering and digital design. His favorite part of this project was when the LCD FSM printed its first character out to the screen: "$"</p>
+    </div>
+  </div>
+
+
+  <!-- Zhian Zhou, Member 2 -->
+  <div class="team-member">
+    <div class="headshot">
+      <img src="images/zhianProfile.png" alt="Zhian Zhou Profile Picture">
+    </div>
+    <div class="bio">
+      <h3>Zhian Zhou</h3>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/zhian-zhou-14ba8b325/">LinkedIn</a>
+        <a href="https://github.com/ZhianZ">GitHub</a>
+        <a href="https://e155.member2.com">E155 Website</a>
+      </div>
+      <p>Zhian is a senior engineer at Harvey Mudd College who's interested in exploring the world of electrical engineering and robotics.</p>
+    </div>
+  </div>
+
+
+</div>
+```

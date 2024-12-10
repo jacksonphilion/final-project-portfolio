@@ -1,15 +1,90 @@
 ---
 title: Results
 ---
+This section first contains a report on all of our projects specifications, describing which ones were met as-is and which ones were modified or un-met. Then, this section provides the simulation and logic analyzer results which demonstrate successful operation of portions of our system. Finally, this section concludes with a presentation of the final system and its capabilities in the form of images and videos.
 
 ## Overall Performance
 
-here
+First, see below for a list of our original project specifications as they were listed in our project proposal:
 
-## Simulation and Oscilloscope Results
+- [ ] The project needs to recognize the correct note for the sound input to the microphone, with inputs ranging from C2 to B5 (65 Hz to 1000 Hz). Tones in between notes are allowed to register as either adjacent note.
+- [ ] The note should display on a screen in scientific pitch notation, including its note letter and octave number.
+- [ ] The screen should not display a note when there is no significant sound input (or should read an “empty” message).
+- [ ] The note display should not be flickering.
 
-here
+As we accessed the success of our final system, we reformatted and adjusted the above list of specifications for clarity and accuracy. See our final report on specification status below:
 
-## Demonstration
+- [ ] The project needs to recognize the correct frequency for the sound input to the microphone.\
+\
+**Status: Met**\
+Our project correctly reads in an analog waveform of an unknown frequency and prints out to the user the correct frequency. Typical accuracy is within +/- 2 Hz. Random noise spikes can drive the accuracy up to +/- 6 Hz on rare occasions.
 
-here
+- [ ] Valid inputs should range from C2 to B5 (65 Hz to 1000 Hz)\
+\
+**Status: Modified**\
+Our system does not meet the specification directly as written above. We discovered that our electret microphone is limited internally to only register frequencies above 100 Hz, per the [data sheet](https://www.sameskydevices.com/product/resource/cme-1538-100lb.pdf). In practice, using an oscilloscope directly on the microphone’s first stage amplified output, we found that the microphone only reliably produces frequencies at or above 160 Hz. Pending verification, however, our digital system is still designed to recognize and process frequencies as low as 65 Hz. Given more time after this realization, we might have switched our microphone part out for a model which is more tolerant of lower frequencies. For example, [this model](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909) is tolerant down to 50 Hz per the data sheet. It may prove to be closer to 100 Hz tolerant in practice, but that remains to be seen. In either case, we are still capable of reading in most any note that lies within a person’s average singing range.\n
+Thus, our system is reliably able to recognize valid inputs from E3 to B5 (165 Hz to 1000 Hz).
+
+- [ ] The system should be accurate enough to recognize the correct note. Frequencies in between notes are allowed to register as either adjacent note.\
+\
+**Status: Met**\
+Our system is very capable of detecting the proper note for a given input. At the top end of our spectrum, adjacent notes vary by over 100 Hz. With a typical accuracy of +/- 2 Hz, we are able to recognize the note. At the lower end of our modified spectrum (see specification note above), E3 differs from the higher note by 10 Hz. With a typical accuracy of +/- 2 Hz, we are again able to correctly identify these notes. 
+
+- [ ] The note should display on a screen in scientific pitch notation, including its note letter and octave number.\
+\
+**Status: Met**\
+The FPGA processes the detected pitch data and correctly displays the note in scientific pitch notation on a LCD display. All frequencies within the modified input range display out properly, with both a letter and a number in pitch notation.
+
+- [ ] The screen should not display a note when there is no significant sound input (or should read an “empty” message)\
+\
+**Status: Met**\
+The LCD display remains blank when there is only ambient noise or no significant sound input. The threshold for this is set relatively high – the user must sing into the microphone in order for their input to read out. That is to say, the user should be no more than a half-foot away from the microphone if they expect to register their pitch. This is an important feature for use in a crowded and noisy environment like the digital lab space.
+
+- [ ] The note display should not be flickering.\
+\
+**Status: Met**\
+This specification aims to ensure that the LCD screen updates smoothly without visible flickering or instability due to the internal operation of the system. Our system properly meets this, updating smoothly with no jarring visual transitions. However, in a particularly loud space or when given an unstable input, the input can be driven temporarily unstable. In these moments, the system can default to the empty message until the signal stabilizes. This is a consequence of reading out the note to the user in real time. We do not recognize this as flickering, it is rather an accurate read out of the current input when it is within the valid range. With a screen refresh rate of about 6 Hz, it is visually distinct from a flickering phenomenon, and does not impede the user experience.
+
+## Simulation and Logic Analyzer Results
+
+As we constructed the HDL code to control the LCD display, we found it helpful to use the simulation tool ModelSim to generate test waveforms of our system's inputs, internal signals, and outputs. Through this process of iterative debugging and testing, we were able to finally generate the following figures which demonstrate a successful system:
+
+![Waveforms showing the system correctly defaults to the s0 powerup state without any external reset required](images/properBoot_noReset.JPG)
+
+In the above image, we were looking to see whether the system would default to a waiting state without the need for an external reset to prime the system. The above waveform shows that the low level FSM correctly defaults to s0_powerup, while the mid level controller FSM correctly defaults to wait_SPI. All other signals are as expected, though they are not particularly relevant at this point.
+
+![Waveforms demonstrating the system correctly recognizes and prepares to display a SPI input](images/properSPIreceive.JPG)
+
+In the above image, we are checking to see if the system properly holds steady until a SPI transaction has completely finished. After completion, we are checking to see if the system correctly stores the sent number, and correctly converts it to a letter and a number representing the corresponding note. Then, we are checking to see whether the system correctly starts the display sequence. We see all of these objectives are met! 
+
+![Waveforms showing that the system correctly displays the received data from a SPI transaction](images/fullSPIprint.JPG)
+
+In the above image, we are checking to make sure that the system executes the proper mid level controller FSM sequence, sends the intended commands as a final output to the LCD, and displays the intended character and letter. We see a resounding final success!
+
+Additionally, we were able to verify these outputs using a Saleae Logic 8 device and the associated software Logic 2. The following image shows a successful initialization and powerup sequence between the LCD unit and our FPGA:
+
+![Successful initialization transaction between LCD unit and FPGA, read on Saleae Logic 8 Analyzer](images/logicProperPowerup.png)
+
+We correctly see the sequence sending 9 commands by tacking 9 distinct enable pulses. We see rs properly staying low until the final command, and by tracing the state of D0-D5 (note that D6-D7 did not fit on the scope, but should read 0 for the first 8 commands), we see the correct instructions sent each time. Note that the instructions should mirror the following sequence:
+
+1. `d[7:0] = 0011 0000, rs=0`, Function Set
+2. `d[7:0] = 0011 0000, rs=0`, Function Set
+3. `d[7:0] = 0011 0000, rs=0`, Function Set
+4. `d[7:0] = 0011 1000, rs=0`, Configure
+5. `d[7:0] = 0000 1000, rs=0`, Display Off
+6. `d[7:0] = 0000 0001, rs=0`, Clear
+7. `d[7:0] = 0000 0110, rs=0`, Entry Mode Set
+8. `d[7:0] = 0000 1100, rs=0`, Display On
+9. `d[7:0] = 0111 0100, rs=1`, Write "$"
+
+## Final System and Full Demonstration
+
+![Finished System](images/finishedSystem2.jpeg)
+
+![Device Interior](images/interior.jpeg)
+
+![Protoboard](images/protoboard.jpeg)
+
+![Breadboard System](images/breadboardSystem.jpeg)
+
+{{< video https://youtu.be/taoTp185rs0 >}}

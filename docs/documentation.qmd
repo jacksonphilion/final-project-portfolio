@@ -11,7 +11,6 @@ number-sections: true
     * Microphone in @sec-microphone
     * Amplifier Circuit in @sec-amplifier
 * Schematics in @sec-schematics
-* Images and Videos in @sec-images-and-videos
 * Github Breakdown in @sec-github
 * Bill of Materials in @sec-bom
 
@@ -34,13 +33,28 @@ Most notably, this LCD unit seems to be built upon the nearly-ubiquitous HD44780
 * 1 RW bit, specifying whether the transmission is a read (high) or a write (low) command. Since we intended to only write to the LCD, we tied this bit low.
 * 1 RS bit, selecting whether the transmission is a character write (high) or a controller instruction (low)
 
+For our purposes, we included a 30 microsecond setup and hold time on all of the data and rs bits. Additionally, we included a 50 microsecond enable window, meaning that we pulsed the enable line high for a total of 50 microseconds every time we were ready to latch our next instruction. Note that these are several orders of magnitude above the minimum, which is on the scale of hundreds of nanoseconds. However, these minimums were plenty fast for our system and worked well with our divided clock on the FPGA.
 
-
-Most critically, the initialization sequence for the controller is laid out plainly by the LCD unit's data sheet. See the initialization flow below, found on page 14 of the [MC21605A6W-FPTLW data sheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf):
+Most critically, the initialization sequence for the controller is laid out plainly by the LCD unit's data sheet. There are strange repetitions in the initialization sequence, and strict timings that appear nowhere else in the datasheet. See the initialization flow below, found on page 14 of the [MC21605A6W-FPTLW data sheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf):
 
 ![Initialization Sequence (see LCD unit datasheet above)](images/initializationFlow.png)
 
-This initialization sequence clearly lays out the required instructions and timing to write to the LCD display. Note that the rs and data write bits should be steady for at least 500 nanoseconds before the enable bit is written high, and 
+This initialization sequence clearly lays out the required instructions and timing to write to the LCD display. Note that any unspecified timing should be followed by a pause of at least 100 microseconds.
+
+Note that our team had challenges with our LCD setup. We found that it was critical to include the proper external circuit to control the contrast on the Vo pin. We created a circuit similar to the one shown on page 7 of the [MC21605A6W-FPTLW data sheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf) and discovered that we could only read out the LCD properly within a very narrow window on our potentiometer. Any user attempting to implement a similar circuit should pay careful attention to testing the system across a range of values for Vo – Initializing the screen with a test character right after the boot up sequence should aid this testing and debugging.
+
+We found the following resource incredibly useful to understanding the setup of an FPGA-based LCD controller. We found a useful guide within the resources for Ava Sherry and Leila Wiberg's project "Vending Machine", which linked to the following resource:\
+[The Robot Diaries, Adding a Character LCD to an FPGA Project](http://robotics.hobbizine.com/fpgalcd.html)
+
+While this code contains an almost complete HDL code set for a HD44780 controller, we only used it to help get us acquainted with the controller, the initialization sequence, and the timings. We ended up adapting a similar system for use in our own code, rewriting it to resemble the FSMs that E85: Digital Electronics teaches. However, we kept some of the core units from this example, namely the parameterized timing sequences and the inclusion of a flag-based counter and state progression system. 
+
+Finally, we used the following character mapping chart to write the desired characters to the LCD display. Note that H refers to high, or 1, and L refers to low, or 0. It is found on page 17 of the [MC21605A6W-FPTLW data sheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf).
+
+![Character Mapping Chart (see LCD unit datasheet above)](images/characterMapping.png)
+
+Finally, for all future E155 students who make it this far into our report – beware the stock LCD screens that seem to proliferate throughout the digital lab. Having the sticker LM016L on the front, we could not figure out how to implement it within our project. We should have nailed down the timing using our system, and I theorize that we simply failed to dial in the contrast properly. However, we never would have gotten the LCD working if we didn't switch to a backlit version like the unit we used. It was the only thing that gave us hope when the screen remained dark and we wondered whether the device worked at all. Although it is not necessary, it greatly increases visibility and inspires hope in the tired programmer. 
+
+For more details about how we implemented an LCD control system, see our FPGA design section.
 
 ### Op Amps {#sec-op-amps}
 
@@ -48,7 +62,7 @@ Op Amps are one of the most common circuit elements in an analog circuit. Harvey
 
 ### Microphone {#sec-microphone}
 
-Simiarly, Harvey Mudd students used a simple electret condenser microphone with their acoustic work in E80: Experimental Engineering. Given its accessibility, we chose to use the same microphone in our project. Specifically, we used the CME-1538-100LB microphone from Same Sky. The datasheet for our microphone may be found [here](https://www.sameskydevices.com/product/resource/cme-1538-100lb.pdf).
+Similarly, Harvey Mudd students used a simple electret condenser microphone with their acoustic work in E80: Experimental Engineering. Given its accessibility, we chose to use the same microphone in our project. Specifically, we used the CME-1538-100LB microphone from Same Sky. The datasheet for our microphone may be found [here](https://www.sameskydevices.com/product/resource/cme-1538-100lb.pdf).
 
 As discussed in our Results section, this microphone turned out to be a poor fit for our project. Our team did not consider that many microphones have a frequency minimum, below which they cannot reliably produce an analog voltage wave output. In our case, this selected microphone lists a minimum frequency of 100 Hz. In practice, we found that the microphone was only capable of reliably reproducing frequencies above 150 Hz. In creating a version two of this device, we would explore replacing the microphone unit with [the CMC-6027-32L100](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909), which claims to be tolerant of sounds as low as 50 Hz. While the reliable frequency limit may be similarly higher, say closer to 100 Hz, this model should still improve the lower range of our readable input values.
 
@@ -65,18 +79,6 @@ Our schematic may be found in @fig-schematic below. It consists of 3 main parts:
 
 Schematic
 :::
-
-## Images and Videos {#sec-images-and-videos}
-
-![Finished System](images/finishedSystem2.jpeg)
-
-![Device Interior](images/interior.jpeg)
-
-![Protoboard](images/protoboard.jpeg)
-
-![Breadboard System](images/breadboardSystem.jpeg)
-
-{{< video https://youtu.be/taoTp185rs0 >}}
 
 ## Github Breakdown {#sec-github}
 
