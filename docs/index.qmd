@@ -1,5 +1,5 @@
 ---
-title: "E155 Final Project Portfolio Website"
+title: "E155 Final Project Portfolio"
 ---
 
 ## Abstract
@@ -23,9 +23,3 @@ Our block diagram may be seen below. See our full documentation page for a more 
 Not everyone has perfect pitch. That is to say, not everyone can hear a musical tone and tell which one is playing. Is that C3? B4? We have no clue! We want to be able to analyze the sound coming from a piano, a phone, a singer, or a MicroPs speaker. We want our system to be able to track the note in near real time, reading out to the user the note they're currently hearing or singing. We hope that by doing so, we can improve our own sense of pitch while helping future MicroPs students troubleshoot their digital audio creations in Lab 4.
 
 Further, this project gave us practice with understanding and enabling key peripherals on the MCU – the DMA and ADC. Both of these are very common systems in embedded systems and digital design, enabling key functionalities within an MCU that are nearly irreplaceable. Additionally, Fourier Transforms are similarly essential to many audio or RF based projects. We wanted to put our systems engineering knowledge to use while learning more about how these theoretical algorithms get implemented into real hardware.
-
-
-5. Results
-   - [ ] A discussion of the overall performance of the final system
-   - [ ] Any relevant simulation results or oscilloscope traces
-   - [ ] Videos or photos of the final project or any intermediate build steps.

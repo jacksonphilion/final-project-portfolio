@@ -34,12 +34,6 @@ After the buffer switching process, the handler resets the FFTReady flag, indica
 
 ## System Diagram
 
-The draw.io diagram and a brief description here. Maybe call out the parts that we can adjust: the BUFFER_SIZE and ADC divisor, which affect sampling frequency and possible outputs.
+See a diagram of our microcontroller routines in the figure below:
 
-
-
-
-
-
-
-
+![Microcontroller Routines](images/microcontroller_routines.png)

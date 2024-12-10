@@ -74,13 +74,9 @@ Since the small microphone signal needs to be amplified to improve resolution in
 
 ## Schematics {#sec-schematics}
 
-Our schematic may be found in @fig-schematic below. It consists of 3 main parts: the E155 development board on the left, the LCD output circuit on the top right, and the microphone and amplification circuits on the bottom right.
+Our schematic may be found in the figure below. It consists of 3 main parts: the E155 development board on the left, the LCD output circuit on the top right, and the microphone and amplification circuits on the bottom right.
 
-::: {#fig-schematic}
-![](images/schematic.png)
-
-Schematic
-:::
+![Schematic](images/schematic.png)
 
 ## Github Breakdown {#sec-github}
 

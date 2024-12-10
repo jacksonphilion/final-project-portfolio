@@ -78,7 +78,6 @@ format:
       <div class="social-links">
         <a href="https://www.linkedin.com/in/zhian-zhou-14ba8b325/">LinkedIn</a>
         <a href="https://github.com/ZhianZ">GitHub</a>
-        <a href="https://e155.member2.com">E155 Website</a>
       </div>
       <p>Zhian is a senior engineer at Harvey Mudd College who's interested in exploring the world of electrical engineering and robotics.</p>
     </div>
