@@ -5,7 +5,7 @@ This section first contains a report on all of our projects specifications, desc
 
 ## Overall Performance
 
-First, see below for a list of our original project specifications as they were listed in our project proposal:
+First, see below for a list of our original project specifications when we first proposed the project:
 
 - [ ] The project needs to recognize the correct note for the sound input to the microphone, with inputs ranging from C2 to B5 (65 Hz to 1000 Hz). Tones in between notes are allowed to register as either adjacent note.
 - [ ] The note should display on a screen in scientific pitch notation, including its note letter and octave number.
@@ -15,33 +15,27 @@ First, see below for a list of our original project specifications as they were 
 As we accessed the success of our final system, we reformatted and adjusted the above list of specifications for clarity and accuracy. See our final report on specification status below:
 
 - [ ] The project needs to recognize the correct frequency for the sound input to the microphone.\
-\
 **Status: Met**\
-Our project correctly reads in an analog waveform of an unknown frequency and prints out to the user the correct frequency. Typical accuracy is within +/- 2 Hz. Random noise spikes can drive the accuracy up to +/- 6 Hz on rare occasions.
+Our project correctly reads in an analog waveform of an unknown frequency and prints out to the user the correct frequency. Typical accuracy is within +/- 3 Hz. Random noise spikes can drive the accuracy up to +/- 6 Hz on rare occasions.
 
 - [ ] Valid inputs should range from C2 to B5 (65 Hz to 1000 Hz)\
-\
 **Status: Modified**\
-Our system does not meet the specification directly as written above. We discovered that our electret microphone is limited internally to only register frequencies above 100 Hz, per the [data sheet](https://www.sameskydevices.com/product/resource/cme-1538-100lb.pdf). In practice, using an oscilloscope directly on the microphone’s first stage amplified output, we found that the microphone only reliably produces frequencies at or above 160 Hz. Pending verification, however, our digital system is still designed to recognize and process frequencies as low as 65 Hz. Given more time after this realization, we might have switched our microphone part out for a model which is more tolerant of lower frequencies. For example, [this model](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909) is tolerant down to 50 Hz per the data sheet. It may prove to be closer to 100 Hz tolerant in practice, but that remains to be seen. In either case, we are still capable of reading in most any note that lies within a person’s average singing range.\n
+Our system does not meet the specification directly as written above. We discovered that our electret microphone is limited internally to only register frequencies above 100 Hz, per the [data sheet](https://www.sameskydevices.com/product/resource/cme-1538-100lb.pdf). In practice, using an oscilloscope directly on the microphone’s first stage amplified output, we found that the microphone only reliably produces frequencies at or above 160 Hz. Our digital system is verified to be able to recognize and process frequencies as low as 65 Hz using a function generator generating sine waves with low frequencies and amplitudes. Given more time after this realization, we might have switched our microphone part out for a model which is more tolerant of lower frequencies. For example, [this model](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909) is tolerant down to 50 Hz per the data sheet. It may prove to be closer to 100 Hz tolerant in practice, but that remains to be seen. In either case, we are still capable of reading in most notes that lie within a person’s average singing range.\n
 Thus, our system is reliably able to recognize valid inputs from E3 to B5 (165 Hz to 1000 Hz).
 
 - [ ] The system should be accurate enough to recognize the correct note. Frequencies in between notes are allowed to register as either adjacent note.\
-\
 **Status: Met**\
-Our system is very capable of detecting the proper note for a given input. At the top end of our spectrum, adjacent notes vary by over 100 Hz. With a typical accuracy of +/- 2 Hz, we are able to recognize the note. At the lower end of our modified spectrum (see specification note above), E3 differs from the higher note by 10 Hz. With a typical accuracy of +/- 2 Hz, we are again able to correctly identify these notes. 
+Our system is very capable of detecting the proper note for a given input. At the top end of our spectrum, adjacent notes vary by over 100 Hz. With a typical accuracy of +/- 3 Hz, we are able to recognize the note. At the lower end of our modified spectrum (see specification note above), E3 differs from the higher note by 10 Hz. With a typical accuracy of +/- 3 Hz, we are again able to correctly identify these notes. 
 
 - [ ] The note should display on a screen in scientific pitch notation, including its note letter and octave number.\
-\
 **Status: Met**\
 The FPGA processes the detected pitch data and correctly displays the note in scientific pitch notation on a LCD display. All frequencies within the modified input range display out properly, with both a letter and a number in pitch notation.
 
 - [ ] The screen should not display a note when there is no significant sound input (or should read an “empty” message)\
-\
 **Status: Met**\
 The LCD display remains blank when there is only ambient noise or no significant sound input. The threshold for this is set relatively high – the user must sing into the microphone in order for their input to read out. That is to say, the user should be no more than a half-foot away from the microphone if they expect to register their pitch. This is an important feature for use in a crowded and noisy environment like the digital lab space.
 
 - [ ] The note display should not be flickering.\
-\
 **Status: Met**\
 This specification aims to ensure that the LCD screen updates smoothly without visible flickering or instability due to the internal operation of the system. Our system properly meets this, updating smoothly with no jarring visual transitions. However, in a particularly loud space or when given an unstable input, the input can be driven temporarily unstable. In these moments, the system can default to the empty message until the signal stabilizes. This is a consequence of reading out the note to the user in real time. We do not recognize this as flickering, it is rather an accurate read out of the current input when it is within the valid range. With a screen refresh rate of about 6 Hz, it is visually distinct from a flickering phenomenon, and does not impede the user experience.
 
