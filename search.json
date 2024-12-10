@@ -4,202 +4,195 @@
     "href": "more.html",
     "title": "More",
     "section": "",
-    "text": "here"
+    "text": "[1]“FPGA to 2-Line Text LCD Interfacing,” Hobbizine.com, 2019. http://robotics.hobbizine.com/fpgalcd.html (accessed Dec. 10, 2024).\n[2]www.alldatasheet.com, “HD44780 datasheet(4/59 Pages) HITACHI,” Alldatasheet.com, 2024. https://www.alldatasheet.com/html-pdf/63673/HITACHI/HD44780/999/4/HD44780.html (accessed Dec. 10, 2024).\n[3]“CME-1538-100LB by Same Sky (Formerly CUI Devices) Datasheet | DigiKey,” Digikey.com, 2021. https://www.digikey.com/en/htmldatasheets/production/749480/0/0/1/cme-1538-100lb (accessed Dec. 10, 2024).\n[4]“CMC-6027-32L100 | DigiKey Electronics,” DigiKey Electronics, 2024. https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909 (accessed Dec. 10, 2024).\n[5]“Display Accessories Part Number Description MCCMDB-16SIL,” 2011. Accessed: Dec. 10, 2024. [Online]. Available: https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf ‌"
   },
   {
-    "objectID": "more.html#all-references",
-    "href": "more.html#all-references",
+    "objectID": "more.html#references",
+    "href": "more.html#references",
     "title": "More",
     "section": "",
-    "text": "here"
+    "text": "[1]“FPGA to 2-Line Text LCD Interfacing,” Hobbizine.com, 2019. http://robotics.hobbizine.com/fpgalcd.html (accessed Dec. 10, 2024).\n[2]www.alldatasheet.com, “HD44780 datasheet(4/59 Pages) HITACHI,” Alldatasheet.com, 2024. https://www.alldatasheet.com/html-pdf/63673/HITACHI/HD44780/999/4/HD44780.html (accessed Dec. 10, 2024).\n[3]“CME-1538-100LB by Same Sky (Formerly CUI Devices) Datasheet | DigiKey,” Digikey.com, 2021. https://www.digikey.com/en/htmldatasheets/production/749480/0/0/1/cme-1538-100lb (accessed Dec. 10, 2024).\n[4]“CMC-6027-32L100 | DigiKey Electronics,” DigiKey Electronics, 2024. https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909 (accessed Dec. 10, 2024).\n[5]“Display Accessories Part Number Description MCCMDB-16SIL,” 2011. Accessed: Dec. 10, 2024. [Online]. Available: https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf ‌"
   },
   {
     "objectID": "more.html#acknowledgements",
     "href": "more.html#acknowledgements",
     "title": "More",
     "section": "Acknowledgements",
-    "text": "Acknowledgements\nhere"
+    "text": "Acknowledgements\nWe sincerely thank Professor Josh Brake, our MicroPs professor, for his invaluable guidance and support throughout this class. Additionally, we would like to thank the class tutors, Neil Chulani, Kavi Dey, and Henry Merrilees for their generous time spent mentoring us students. Finally, we need to thank all the other members of our Fall 2024 edition of E155. Our classmates acted as endless sounding boards, late-night lab partners, debugging assistants, and voices of reason. Finally, a thank you to the engineering staff who helped support us with all of our equipment in the digital lab."
   },
   {
-    "objectID": "mcu-design.html#new-peripherals",
-    "href": "mcu-design.html#new-peripherals",
+    "objectID": "mcu-design.html",
+    "href": "mcu-design.html",
     "title": "MCU",
-    "section": "New Peripherals",
-    "text": "New Peripherals\nThis section describes how we used the new peripherals in our system, and some of the key points that we discovered with each.\n\nADC\nhere\n\n\nDMA\nhere"
+    "section": "",
+    "text": "The project uses an STM32L432KCU microcontroller to process audio data. To do so, it needs to enable three key elements: the ADC peripheral, the DMA peripheral, and the CMSIS DSP library. To communicate this data with the external LCD driver, the MCU must also interface with its SPI peripheral.\n\n\nThe ADC digitizes the sound waves captured and amplified. The DMA facilitates direct data transfers to the memory without the CPU’s involvement. Using the DMA ensures real-time data acquisition, as is suitable for frequency analysis. To configure the ADC, the ADC clock is enabled through Reset and Clock Control (RCC), and a GPIO pin (PB0) is set to operate in analog input mode. The ADC is calibrated for optimal performance, and configured for 12-bit resolution, 6250 Hz sampling rate, and continuous conversion mode.\n\n\n\nThe DMA is configured to transfer data from the ADC data register to the memory. The DMA clock is enabled through RCC and DMA channel 1 is assigned to handle data transfer. Both memory and peripheral data size are configured as 16 bits for the 12-bit data, and circular mode is disabled to ensure the data in the memory will not be overwritten before frequency analysis is done.\n\n\n\nFor frequency analysis, the CMSIS-DSP library is implemented to perform Fast Fourier Transform (FFT) on the audio data. Before performing the FFT, a Hanning window is applied to the data to reduce spectral leakage, improving the accuracy of frequency calculation. The FFT output is analyzed to determine the dominant frequency by identifying the peak magnitude in the frequency spectrum.\n\n\n\nFinally, the calculated frequency is transmitted to the FPGA via SPI. SPI is configured to transmit the frequency data as a 16-bit value.\n\n\n\nTo manage continuous audio data acquiring and processing without interruptions, a dual buffer design is implemented. The design uses two buffers (buffer1 and buffer2) in the SRAM alternatively for DMA data writing and FFT data processing. While DMA writes to one buffer, the other is processed by FFT. This design avoids data loss or overwriting during FFT processing, as the two operations can occur simultaneously and independently.\nInitially, the buffer1 is configured as the target buffer for DMA to write ADC data, while buffer2 is idle. This setup ensures that the system has a clear starting state.\nOnce the DMA completes transferring a full buffer of ADC samples, it triggers an interrupt, handled by the DMA1_Channel1_IRQHandler function. In this interrupt service routine, the system performs two critical tasks. First, the interrupt status flag is checked to confirm the transfer completion. This flag is then cleared to allow the system to respond to subsequent DMA interrupts. Second, DMA is temporarily disabled to safely update its memory and control configurations, ensuring no conflicts during buffer switching.\nBefore switching buffers, the handler checks if FFT processing has completed on the previously filled buffer. This is done using a flag (FFTReady). If the FFT function has not yet processed the buffer, the interrupt handler exits early, allowing the processing to catch up.\nOnce FFT processing is confirmed to be complete, the system alternates the roles of the two buffers. If buffer1 was being used by the DMA to collect data, it is now assigned to the FFT processor, while the DMA begins filling buffer2. Conversely, if buffer2 was the active DMA buffer, it is swapped with buffer1.\nAfter the buffer switch, the DMA settings are updated to reflect the new buffer being used. The memory address pointer for the DMA is updated to point to the new target buffer (DMAptr). The buffer size counter (DMA1_Channel1-&gt;CNDTR) is reset to ensure the DMA knows how much data to transfer in the next cycle. The ADC overrun flag is cleared to avoid potential data corruption errors, and the DMA channel is re-enabled to resume operation.\nAfter the buffer switching process, the handler resets the FFTReady flag, indicating that the newly filled buffer is not yet ready for FFT processing."
+  },
+  {
+    "objectID": "mcu-design.html#summary",
+    "href": "mcu-design.html#summary",
+    "title": "MCU",
+    "section": "",
+    "text": "The project uses an STM32L432KCU microcontroller to process audio data. To do so, it needs to enable three key elements: the ADC peripheral, the DMA peripheral, and the CMSIS DSP library. To communicate this data with the external LCD driver, the MCU must also interface with its SPI peripheral.\n\n\nThe ADC digitizes the sound waves captured and amplified. The DMA facilitates direct data transfers to the memory without the CPU’s involvement. Using the DMA ensures real-time data acquisition, as is suitable for frequency analysis. To configure the ADC, the ADC clock is enabled through Reset and Clock Control (RCC), and a GPIO pin (PB0) is set to operate in analog input mode. The ADC is calibrated for optimal performance, and configured for 12-bit resolution, 6250 Hz sampling rate, and continuous conversion mode.\n\n\n\nThe DMA is configured to transfer data from the ADC data register to the memory. The DMA clock is enabled through RCC and DMA channel 1 is assigned to handle data transfer. Both memory and peripheral data size are configured as 16 bits for the 12-bit data, and circular mode is disabled to ensure the data in the memory will not be overwritten before frequency analysis is done.\n\n\n\nFor frequency analysis, the CMSIS-DSP library is implemented to perform Fast Fourier Transform (FFT) on the audio data. Before performing the FFT, a Hanning window is applied to the data to reduce spectral leakage, improving the accuracy of frequency calculation. The FFT output is analyzed to determine the dominant frequency by identifying the peak magnitude in the frequency spectrum.\n\n\n\nFinally, the calculated frequency is transmitted to the FPGA via SPI. SPI is configured to transmit the frequency data as a 16-bit value.\n\n\n\nTo manage continuous audio data acquiring and processing without interruptions, a dual buffer design is implemented. The design uses two buffers (buffer1 and buffer2) in the SRAM alternatively for DMA data writing and FFT data processing. While DMA writes to one buffer, the other is processed by FFT. This design avoids data loss or overwriting during FFT processing, as the two operations can occur simultaneously and independently.\nInitially, the buffer1 is configured as the target buffer for DMA to write ADC data, while buffer2 is idle. This setup ensures that the system has a clear starting state.\nOnce the DMA completes transferring a full buffer of ADC samples, it triggers an interrupt, handled by the DMA1_Channel1_IRQHandler function. In this interrupt service routine, the system performs two critical tasks. First, the interrupt status flag is checked to confirm the transfer completion. This flag is then cleared to allow the system to respond to subsequent DMA interrupts. Second, DMA is temporarily disabled to safely update its memory and control configurations, ensuring no conflicts during buffer switching.\nBefore switching buffers, the handler checks if FFT processing has completed on the previously filled buffer. This is done using a flag (FFTReady). If the FFT function has not yet processed the buffer, the interrupt handler exits early, allowing the processing to catch up.\nOnce FFT processing is confirmed to be complete, the system alternates the roles of the two buffers. If buffer1 was being used by the DMA to collect data, it is now assigned to the FFT processor, while the DMA begins filling buffer2. Conversely, if buffer2 was the active DMA buffer, it is swapped with buffer1.\nAfter the buffer switch, the DMA settings are updated to reflect the new buffer being used. The memory address pointer for the DMA is updated to point to the new target buffer (DMAptr). The buffer size counter (DMA1_Channel1-&gt;CNDTR) is reset to ensure the DMA knows how much data to transfer in the next cycle. The ADC overrun flag is cleared to avoid potential data corruption errors, and the DMA channel is re-enabled to resume operation.\nAfter the buffer switching process, the handler resets the FFTReady flag, indicating that the newly filled buffer is not yet ready for FFT processing."
   },
   {
     "objectID": "mcu-design.html#system-diagram",
     "href": "mcu-design.html#system-diagram",
     "title": "MCU",
     "section": "System Diagram",
-    "text": "System Diagram\nThe draw.io diagram and a brief description here. Maybe call out the parts that we can adjust: the BUFFER_SIZE and ADC divisor, which affect sampling frequency and possible outputs."
+    "text": "System Diagram\nSee a diagram of our microcontroller routines in the figure below:\n\n\n\nMicrocontroller Routines"
   },
   {
     "objectID": "results.html",
     "href": "results.html",
     "title": "Results",
     "section": "",
-    "text": "here"
+    "text": "This section first contains a report on all of our projects specifications, describing which ones were met as-is and which ones were modified or un-met. Then, this section provides the simulation and logic analyzer results which demonstrate successful operation of portions of our system. Finally, this section concludes with a presentation of the final system and its capabilities in the form of images and videos."
   },
   {
     "objectID": "results.html#overall-performance",
     "href": "results.html#overall-performance",
     "title": "Results",
-    "section": "",
-    "text": "here"
+    "section": "Overall Performance",
+    "text": "Overall Performance\nFirst, see below for a list of our original project specifications when we first proposed the project:\n\nThe project needs to recognize the correct note for the sound input to the microphone, with inputs ranging from C2 to B5 (65 Hz to 1000 Hz). Tones in between notes are allowed to register as either adjacent note.\nThe note should display on a screen in scientific pitch notation, including its note letter and octave number.\nThe screen should not display a note when there is no significant sound input (or should read an “empty” message).\nThe note display should not be flickering.\n\nAs we accessed the success of our final system, we reformatted and adjusted the above list of specifications for clarity and accuracy. See our final report on specification status below:\n\nThe project needs to recognize the correct frequency for the sound input to the microphone.\nStatus: Met\nOur project correctly reads in an analog waveform of an unknown frequency and prints out to the user the correct frequency. Typical accuracy is within +/- 3 Hz. Random noise spikes can drive the accuracy up to +/- 6 Hz on rare occasions.\nValid inputs should range from C2 to B5 (65 Hz to 1000 Hz)\nStatus: Modified\nOur system does not meet the specification directly as written above. We discovered that our electret microphone is limited internally to only register frequencies above 100 Hz, per the data sheet. In practice, using an oscilloscope directly on the microphone’s first stage amplified output, we found that the microphone only reliably produces frequencies at or above 160 Hz. Our digital system is verified to be able to recognize and process frequencies as low as 65 Hz using a function generator generating sine waves with low frequencies and amplitudes. Given more time after this realization, we might have switched our microphone part out for a model which is more tolerant of lower frequencies. For example, this model is tolerant down to 50 Hz per the data sheet. It may prove to be closer to 100 Hz tolerant in practice, but that remains to be seen. In either case, we are still capable of reading in most notes that lie within a person’s average singing range. Thus, our system is reliably able to recognize valid inputs from E3 to B5 (165 Hz to 1000 Hz).\nThe system should be accurate enough to recognize the correct note. Frequencies in between notes are allowed to register as either adjacent note.\nStatus: Met\nOur system is very capable of detecting the proper note for a given input. At the top end of our spectrum, adjacent notes vary by over 100 Hz. With a typical accuracy of +/- 3 Hz, we are able to recognize the note. At the lower end of our modified spectrum (see specification note above), E3 differs from the higher note by 10 Hz. With a typical accuracy of +/- 3 Hz, we are again able to correctly identify these notes.\nThe note should display on a screen in scientific pitch notation, including its note letter and octave number.\nStatus: Met\nThe FPGA processes the detected pitch data and correctly displays the note in scientific pitch notation on a LCD display. All frequencies within the modified input range display out properly, with both a letter and a number in pitch notation.\nThe screen should not display a note when there is no significant sound input (or should read an “empty” message)\nStatus: Met\nThe LCD display remains blank when there is only ambient noise or no significant sound input. The threshold for this is set relatively high – the user must sing into the microphone in order for their input to read out. That is to say, the user should be no more than a half-foot away from the microphone if they expect to register their pitch. This is an important feature for use in a crowded and noisy environment like the digital lab space.\nThe note display should not be flickering.\nStatus: Met\nThis specification aims to ensure that the LCD screen updates smoothly without visible flickering or instability due to the internal operation of the system. Our system properly meets this, updating smoothly with no jarring visual transitions. However, in a particularly loud space or when given an unstable input, the input can be driven temporarily unstable. In these moments, the system can default to the empty message until the signal stabilizes. This is a consequence of reading out the note to the user in real time. We do not recognize this as flickering, it is rather an accurate read out of the current input when it is within the valid range. With a screen refresh rate of about 6 Hz, it is visually distinct from a flickering phenomenon, and does not impede the user experience."
   },
   {
-    "objectID": "results.html#simulation-and-oscilloscope-results",
-    "href": "results.html#simulation-and-oscilloscope-results",
+    "objectID": "results.html#simulation-and-logic-analyzer-results",
+    "href": "results.html#simulation-and-logic-analyzer-results",
     "title": "Results",
-    "section": "Simulation and Oscilloscope Results",
-    "text": "Simulation and Oscilloscope Results\nhere"
+    "section": "Simulation and Logic Analyzer Results",
+    "text": "Simulation and Logic Analyzer Results\nAs we constructed the HDL code to control the LCD display, we found it helpful to use the simulation tool ModelSim to generate test waveforms of our system’s inputs, internal signals, and outputs. Through this process of iterative debugging and testing, we were able to finally generate the following figures which demonstrate a successful system:\n\n\n\nWaveforms showing the system correctly defaults to the s0 powerup state without any external reset required\n\n\nIn the above image, we were looking to see whether the system would default to a waiting state without the need for an external reset to prime the system. The above waveform shows that the low level FSM correctly defaults to s0_powerup, while the mid level controller FSM correctly defaults to wait_SPI. All other signals are as expected, though they are not particularly relevant at this point.\n\n\n\nWaveforms demonstrating the system correctly recognizes and prepares to display a SPI input\n\n\nIn the above image, we are checking to see if the system properly holds steady until a SPI transaction has completely finished. After completion, we are checking to see if the system correctly stores the sent number, and correctly converts it to a letter and a number representing the corresponding note. Then, we are checking to see whether the system correctly starts the display sequence. We see all of these objectives are met!\n\n\n\nWaveforms showing that the system correctly displays the received data from a SPI transaction\n\n\nIn the above image, we are checking to make sure that the system executes the proper mid level controller FSM sequence, sends the intended commands as a final output to the LCD, and displays the intended character and letter. We see a resounding final success!\nAdditionally, we were able to verify these outputs using a Saleae Logic 8 device and the associated software Logic 2. The following image shows a successful initialization and powerup sequence between the LCD unit and our FPGA:\n\n\n\nSuccessful initialization transaction between LCD unit and FPGA, read on Saleae Logic 8 Analyzer\n\n\nWe correctly see the sequence sending 9 commands by tacking 9 distinct enable pulses. We see rs properly staying low until the final command, and by tracing the state of D0-D5 (note that D6-D7 did not fit on the scope, but should read 0 for the first 8 commands), we see the correct instructions sent each time. Note that the instructions should mirror the following sequence:\n\nd[7:0] = 0011 0000, rs=0, Function Set\nd[7:0] = 0011 0000, rs=0, Function Set\nd[7:0] = 0011 0000, rs=0, Function Set\nd[7:0] = 0011 1000, rs=0, Configure\nd[7:0] = 0000 1000, rs=0, Display Off\nd[7:0] = 0000 0001, rs=0, Clear\nd[7:0] = 0000 0110, rs=0, Entry Mode Set\nd[7:0] = 0000 1100, rs=0, Display On\nd[7:0] = 0111 0100, rs=1, Write “$”"
   },
   {
-    "objectID": "results.html#demonstration",
-    "href": "results.html#demonstration",
+    "objectID": "results.html#final-system-and-full-demonstration",
+    "href": "results.html#final-system-and-full-demonstration",
     "title": "Results",
-    "section": "Demonstration",
-    "text": "Demonstration\nhere"
+    "section": "Final System and Full Demonstration",
+    "text": "Final System and Full Demonstration\n\n\n\nFinished System\n\n\n\n\n\nDevice Interior\n\n\n\n\n\nProtoboard\n\n\n\n\n\nBreadboard System"
   },
   {
     "objectID": "fpga-design.html",
     "href": "fpga-design.html",
     "title": "FPGA",
     "section": "",
-    "text": "here"
+    "text": "In order to control the LCD screen, which is described in detail within the New Hardware section of Documentation, we chose to create a system of nested FSMs. The following sections describe both of these FSMs in detail, as well as outlining the HDL modules we used to connect the whole system.\nI first created the following hand drawn block diagram to outline the modules that I would need to control the LCD and SPI system.\n\n\n\nHand Drawn HDL Block Diagram\n\n\nFrom this design, I identified 5 key modules to make:\n\nA top module, to contain the oscillator and clock divider parts of the system\nA low level FSM, for the LCD’s control of individual commands\nA mid level controller, to control the order of commands sent to the low level FSM\nA converter module to switch from frequency to pitch notation\nFinally, a SPI module to store the incoming data and regulate the system’s response to incoming SPI transactions."
   },
   {
     "objectID": "fpga-design.html#summary",
     "href": "fpga-design.html#summary",
     "title": "FPGA",
     "section": "",
-    "text": "here"
+    "text": "In order to control the LCD screen, which is described in detail within the New Hardware section of Documentation, we chose to create a system of nested FSMs. The following sections describe both of these FSMs in detail, as well as outlining the HDL modules we used to connect the whole system.\nI first created the following hand drawn block diagram to outline the modules that I would need to control the LCD and SPI system.\n\n\n\nHand Drawn HDL Block Diagram\n\n\nFrom this design, I identified 5 key modules to make:\n\nA top module, to contain the oscillator and clock divider parts of the system\nA low level FSM, for the LCD’s control of individual commands\nA mid level controller, to control the order of commands sent to the low level FSM\nA converter module to switch from frequency to pitch notation\nFinally, a SPI module to store the incoming data and regulate the system’s response to incoming SPI transactions."
   },
   {
-    "objectID": "fpga-design.html#lcd-screen",
-    "href": "fpga-design.html#lcd-screen",
+    "objectID": "fpga-design.html#top-module",
+    "href": "fpga-design.html#top-module",
     "title": "FPGA",
-    "section": "LCD Screen",
-    "text": "LCD Screen\nhere"
+    "section": "Top Module",
+    "text": "Top Module\nOverall, our top module had prescribed inputs and outputs. We need this unit to read in the SPI data from the MCU, and output the 10-line parallel interface data to control the LCD. The highest level block diagram, describing all the interconnections between the modules described below, may be seen here:\n\n\n\nTop Level Block Diagram\n\n\nNote that this module was almost entirely a connecting module, containing very little logic. Yet, it does have two key things aside from basic module interconnects. Firstly, this module directly contains the call which instantiates the high frequency oscillator (HFOSC, 48 MHz) and adds a clock divider (which outputs a final frequency of 100 kHz). Secondly, this module contains some unpictured debug logic which can be hooked up to any signal at any time to read out the current state of the system for debugging purposes."
   },
   {
-    "objectID": "fpga-design.html#hdl-block-diagram",
-    "href": "fpga-design.html#hdl-block-diagram",
+    "objectID": "fpga-design.html#low-level-fsm-module",
+    "href": "fpga-design.html#low-level-fsm-module",
     "title": "FPGA",
-    "section": "HDL Block Diagram",
-    "text": "HDL Block Diagram\nhere"
+    "section": "Low Level FSM Module",
+    "text": "Low Level FSM Module\nOur low level FSM module is responsible for directly controlling the data, rs, and enable lines. This module specifies the timing requirements between signals, and contains the programming which ensures that the system initializes properly upon system powerup or reset. In order to accomplish this initialization sequence, we first created a 22 state FSM to control the timings and instructions necessary upon restart. The state diagram is shown in the figure below.\n\n\n\nInitialization State Diagram in Low Level FSM\n\n\nIn order to track the system timings, we used a main counter and a series of flags that set themselves as the counter reached the appropriate time mark. Each time the state transitioned, or state!==nextstate, the counter and flags all reset to 0. This allowed us to track time in a repeatable and simple way throughout any state we needed to time. Finally, note that the system enters into an idle state. Since this state differed so significantly from the rest of the initialization sequence, we chose to represent it as a separate FSM shown in the figure below. Note, however, that this FSM is a part of the same module as the initialization sequence above.\n\n\n\nMain Idle State Diagram in Low Level FSM\n\n\nThis is the main loop of our low level module, if one considers it like a microcontroller routine. The default state of the system is to powerup and then wait for an incoming instruction to write a new command. However, this fsm only manages the timing between transactions and writes single commands. In order to control which instructions should play in which order, we created a separate mid-level FSM to isolate the system which sends commands from the system which dictates the order in which to send commands."
   },
   {
-    "objectID": "fpga-design.html#state-transition-diagrams",
-    "href": "fpga-design.html#state-transition-diagrams",
+    "objectID": "fpga-design.html#mid-level-controller-module",
+    "href": "fpga-design.html#mid-level-controller-module",
     "title": "FPGA",
-    "section": "State Transition Diagrams",
-    "text": "State Transition Diagrams\nhere"
+    "section": "Mid Level Controller Module",
+    "text": "Mid Level Controller Module\nThe mid level FSM can be thought of as the director of the low level FSM. This level tells the low level unit what order to send a particular command sequence in. Further, it alone interfaces with the SPI unit, isolating the SPI transactions from the low level LCD architecture. Anything system-specific should happen on this level, allowing the low-level FSM to act like a general-use LCD driver.\nThe figure below describes the FSM we designed to accomplish this middling function. Note that it idles in the wait_SPI state until the SPI module signals that a new transaction has been received by setting new_SPI.\n\n\n\nMid Level State Transition Diagram"
+  },
+  {
+    "objectID": "fpga-design.html#converter-module",
+    "href": "fpga-design.html#converter-module",
+    "title": "FPGA",
+    "section": "Converter Module",
+    "text": "Converter Module\nThe converter module is a purely combinational piece of logic which converts, at any given time, the current frequency value stored in the frequency register to a corresponding letter and note. The rest of the timing and system control is handled by the synchronous units in the SPI module and the Controller module."
+  },
+  {
+    "objectID": "fpga-design.html#spi-module",
+    "href": "fpga-design.html#spi-module",
+    "title": "FPGA",
+    "section": "SPI Module",
+    "text": "SPI Module\nThis module handles the SPI data coming from the MCU. It contains a shift register system which adds the incoming sdi input data to a raw_frequency register, and which sends a new batch of data to the true frequency register when a SPI transaction has finished and the Chip Select line goes high. This transaction ending triggers the SPI module to send out the internal signal new_SPI, which communicates with the controller module to trigger a new printing cycle."
   },
   {
     "objectID": "team.html",
     "href": "team.html",
     "title": "Team",
     "section": "",
-    "text": "here"
-  },
-  {
-    "objectID": "team.html#zhian-zhou",
-    "href": "team.html#zhian-zhou",
-    "title": "Team",
-    "section": "",
-    "text": "here"
-  },
-  {
-    "objectID": "team.html#jackson-philion",
-    "href": "team.html#jackson-philion",
-    "title": "Team",
-    "section": "Jackson Philion",
-    "text": "Jackson Philion\nhere"
+    "text": "Meet the Team\n\n\n\n\n  \n  \n    \n      \n    \n    \n      Jackson Philion\n      \n        LinkedIn\n        GitHub\n        E155 Website\n      \n      Jackson is an electrical engineering student who's passionate about the intersection between hardware engineering and digital design. His favorite part of this project was when the LCD FSM printed its first character out to the screen: \"$\"\n    \n  \n\n\n  \n  \n    \n      \n    \n    \n      Zhian Zhou\n      \n        LinkedIn\n        GitHub\n      \n      Zhian is a senior engineer at Harvey Mudd College who's interested in exploring the world of electrical engineering and robotics."
   },
   {
     "objectID": "documentation.html",
     "href": "documentation.html",
     "title": "Documentation",
     "section": "",
-    "text": "This section contains a list of our new hardware. Each section contains a short descriptions of how we chose the part and where in the system it was used.\n\n\nhere. Reference to the FPGA design section.\n\n\n\nhere\n\n\n\nhere"
+    "text": "New Hardware in Section 1\n\nLCD Screen in Section 1.1\nOp Amps in Section 1.2\nMicrophone in Section 1.3\nAmplifier Circuit in Section 1.4\n\nSchematics in Section 2\nGithub Breakdown in Section 3\nBill of Materials in Section 4"
   },
   {
-    "objectID": "documentation.html#new-hardware",
-    "href": "documentation.html#new-hardware",
+    "objectID": "documentation.html#sec-new-hardware",
+    "href": "documentation.html#sec-new-hardware",
     "title": "Documentation",
-    "section": "",
-    "text": "This section contains a list of our new hardware. Each section contains a short descriptions of how we chose the part and where in the system it was used.\n\n\nhere. Reference to the FPGA design section.\n\n\n\nhere\n\n\n\nhere"
+    "section": "1 New Hardware",
+    "text": "1 New Hardware\nThis section contains a listing of our new hardware. Each new piece is accompanied by a short description of how we chose the part and where in the system it was used. We also include a longer explanation for the most relevant part, the LCD screen.\n\n1.1 LCD Screen\nThe LCD screen was our project’s primary “new hardware” addition. Pictured below, we used the MC21605A6W-FPTLW, henceforth referred to as the LCD unit. See the surprisingly helpful datasheet here, where an effective and brief user guide may be found. This screen has two lines of up to 16 characters each. See the front and back of the LCD unit pictured below:\n\n\n\nFront of LCD unit\n\n\n\n\n\nBack of LCD unit\n\n\nMost notably, this LCD unit seems to be built upon the nearly-ubiquitous HD44780 controller from Hitachi, henceforth referred to as the controller. This controller has a very standardized character set, instruction set, and communication interface. The communication protocol is based on an 11-line parallel interface consisting of:\n\n8 Data Bits (D7-D0)\n1 Enable bit, pulsed high once a transmission is ready to be sent to the controller\n1 RW bit, specifying whether the transmission is a read (high) or a write (low) command. Since we intended to only write to the LCD, we tied this bit low.\n1 RS bit, selecting whether the transmission is a character write (high) or a controller instruction (low)\n\nFor our purposes, we included a 30 microsecond setup and hold time on all of the data and rs bits. Additionally, we included a 50 microsecond enable window, meaning that we pulsed the enable line high for a total of 50 microseconds every time we were ready to latch our next instruction. Note that these are several orders of magnitude above the minimum, which is on the scale of hundreds of nanoseconds. However, these minimums were plenty fast for our system and worked well with our divided clock on the FPGA.\nMost critically, the initialization sequence for the controller is laid out plainly by the LCD unit’s data sheet. There are strange repetitions in the initialization sequence, and strict timings that appear nowhere else in the datasheet. See the initialization flow below, found on page 14 of the MC21605A6W-FPTLW data sheet:\n\n\n\nInitialization Sequence (see LCD unit datasheet above)\n\n\nThis initialization sequence clearly lays out the required instructions and timing to write to the LCD display. Note that any unspecified timing should be followed by a pause of at least 100 microseconds.\nNote that our team had challenges with our LCD setup. We found that it was critical to include the proper external circuit to control the contrast on the Vo pin. We created a circuit similar to the one shown on page 7 of the MC21605A6W-FPTLW data sheet and discovered that we could only read out the LCD properly within a very narrow window on our potentiometer. Any user attempting to implement a similar circuit should pay careful attention to testing the system across a range of values for Vo – Initializing the screen with a test character right after the boot up sequence should aid this testing and debugging.\nWe found the following resource incredibly useful to understanding the setup of an FPGA-based LCD controller. We found a useful guide within the resources for Ava Sherry and Leila Wiberg’s project “Vending Machine”, which linked to the following resource:\nThe Robot Diaries, Adding a Character LCD to an FPGA Project\nWhile this code contains an almost complete HDL code set for a HD44780 controller, we only used it to help get us acquainted with the controller, the initialization sequence, and the timings. We ended up adapting a similar system for use in our own code, rewriting it to resemble the FSMs that E85: Digital Electronics teaches. However, we kept some of the core units from this example, namely the parameterized timing sequences and the inclusion of a flag-based counter and state progression system.\nFinally, we used the following character mapping chart to write the desired characters to the LCD display. Note that H refers to high, or 1, and L refers to low, or 0. It is found on page 17 of the MC21605A6W-FPTLW data sheet.\n\n\n\nCharacter Mapping Chart (see LCD unit datasheet above)\n\n\nFinally, for all future E155 students who make it this far into our report – beware the stock LCD screens that seem to proliferate throughout the digital lab. Having the sticker LM016L on the front, we could not figure out how to implement it within our project. We should have nailed down the timing using our system, and I theorize that we simply failed to dial in the contrast properly. However, we never would have gotten the LCD working if we didn’t switch to a backlit version like the unit we used. It was the only thing that gave us hope when the screen remained dark and we wondered whether the device worked at all. Although it is not necessary, it greatly increases visibility and inspires hope in the tired programmer.\nFor more details about how we implemented an LCD control system, see our FPGA design section.\n\n\n1.2 Op Amps\nOp Amps are one of the most common circuit elements in an analog circuit. Harvey Mudd students are familiar with op amps through their application in E80: Experimental Engineering and E84: Analog Electronics, and we applied them in our project to create similar differential amplifiers. We chose to use the MCP601 op amp since it is easily accessibly in our lab space, came in a DIP-8 package, and had a single-railed supply which could operate on our 3.3 Volt supply (MCP601 requires 0 and 2.7–6.0 Volt rails). See the datasheet for our part here.\n\n\n1.3 Microphone\nSimilarly, Harvey Mudd students used a simple electret condenser microphone with their acoustic work in E80: Experimental Engineering. Given its accessibility, we chose to use the same microphone in our project. Specifically, we used the CME-1538-100LB microphone from Same Sky. The datasheet for our microphone may be found here.\nAs discussed in our Results section, this microphone turned out to be a poor fit for our project. Our team did not consider that many microphones have a frequency minimum, below which they cannot reliably produce an analog voltage wave output. In our case, this selected microphone lists a minimum frequency of 100 Hz. In practice, we found that the microphone was only capable of reliably reproducing frequencies above 160 Hz. In creating a version two of this device, we would explore replacing the microphone unit with the CMC-6027-32L100, which claims to be tolerant of sounds as low as 50 Hz. While the reliable frequency limit may be similarly higher, say closer to 100 Hz, this model should still improve the lower range of our readable input values.\n\n\n1.4 Amplifier Circuit\nThe design of our amplifier circuit aims to process the signal from an external microphone and prepare it for further analysis or use in downstream systems. Our circuit, as shown in the schematics, is derived from a similar design used in the E80 lab. The electret microphone CME-1538-100LB generates an output signal that is small (typically in the tens of millivolts) and centered around zero. To optimize this signal for a 0–3.3 V range, we implemented an amplifier circuit with a total gain of approximately 100 while ensuring the output signal remains within the desired range.\nSince the small microphone signal needs to be amplified to improve resolution in the 0–3.3 V range, a total gain of 100 is achieved by cascading two amplifier stages, each with a gain of about 10. The first stage introduces an offset to ensure the signal does not rail out due to a lack of a negative voltage supply. The final design of the first stage results in a gain of 10 and a DC offset of anout 1V, so the minimum voltage is 0.9V and the maximum voltage is 1.2V. The second stage further amplifies the signal with a gain of roughly 7 and a negative offset of 5.5V. Thus, the expected output range is from 0.8V to 2.9V."
   },
   {
-    "objectID": "documentation.html#schematics",
-    "href": "documentation.html#schematics",
+    "objectID": "documentation.html#sec-schematics",
+    "href": "documentation.html#sec-schematics",
     "title": "Documentation",
-    "section": "Schematics",
-    "text": "Schematics\nOur schematic may be found in Figure 1 below. It consists of 3 main parts: the E155 development board on the left, the LCD output circuit on the top right, and the microphone and amplification circuits on the bottom right.\n\n\n\n\n\n\nFigure 1: Schematic"
+    "section": "2 Schematics",
+    "text": "2 Schematics\nOur schematic may be found in the figure below. It consists of 3 main parts: the E155 development board on the left, the LCD output circuit on the top right, and the microphone and amplification circuits on the bottom right.\n\n\n\nSchematic"
   },
   {
-    "objectID": "documentation.html#github-link",
-    "href": "documentation.html#github-link",
+    "objectID": "documentation.html#sec-github",
+    "href": "documentation.html#sec-github",
     "title": "Documentation",
-    "section": "Github Link",
-    "text": "Github Link\nhere"
+    "section": "3 Github Breakdown",
+    "text": "3 Github Breakdown\nAll of our source code may be found in our project’s github here. Note that it is organized as follows:\n\nMCU/ which contains:\n\nsrc/ which contains our main.c file\nlib/ which contains all of our given, custom, and CMSIS libraries\nsegger/ which contains the SEGGER project used to debug and upload our code\n\nFPGA/ which contains:\n\nfinalProject.sv, an integrated single-file version of all of our FPGA modules.\nradiant_project/ which contains the Lattice Radiant project we used to build, test, and download finalProject.sv\nmodelsim_project/ which contains the ModelSim project used to simulate and debug the integrated single-file solution. Note that it contains its own file, finalProject_sim.sv, which mirrors the main .sv file but is built for effective simulation with an externally fed clock signal.\n\nnotesAndExtras/ which contains:\n\ndemo/ which contains the source files and SEGGER project for our initial 25% completion demonstration. Specifically, this prototype is made to read in an ADC value and print it out to the user\nKiCad/ which contains the KiCad schematic file used to create our schematic above\nsimulationCaptures/ which contains the raw screenshot images taken of ModelSim waveforms for our simulated top.sv code, found in:\nsimulationFiles/ which contains the deprecated version of top.sv back before we transitioned to a single file system"
   },
   {
-    "objectID": "documentation.html#bill-of-materials",
-    "href": "documentation.html#bill-of-materials",
+    "objectID": "documentation.html#sec-bom",
+    "href": "documentation.html#sec-bom",
     "title": "Documentation",
-    "section": "Bill Of Materials",
-    "text": "Bill Of Materials\nhere"
+    "section": "4 Bill Of Materials",
+    "text": "4 Bill Of Materials\n\n\n\n\n\n\n\n\n\n\nItem\nPart Number\nQuantity\nUnit Price\nVendor\n\n\n\n\nElectic Microphone\nCME-1538-100LB\n1\n\nEngineering Stockroom\n\n\nLCD Display\nMC21605A6W-FPTLW\n1\n\nEngineering Stockroom\n\n\nNucleo STM32L432KC Microcontroller\nSTM32 Nucleo-32\n1\n\nE155 Kit\n\n\nUPDuino v3.1 ICE40 UP5K FPGA\n\n1\n\nE155 Kit\n\n\nOperational Amplifier\nMCP601\n2\n\nEngineering Stockroom\n\n\n10kohm Potentiometer\n\n1\n\nEngineering Stockroom\n\n\n39ohm Resistor\n\n1\n\nEngineering Stockroom\n\n\n150ohm Resistor\n\n1\n\nEngineering Stockroom\n\n\n1kohm Resistor\n\n1\n\nEngineering Stockroom\n\n\n1.3kohm Resistor\n\n1\n\nEngineering Stockroom\n\n\n2.2kohm Resistor\n\n3\n\nEngineering Stockroom\n\n\n4.7kohm Resistor\n\n1\n\nEngineering Stockroom\n\n\n10kohm Resistor\n\n2\n\nEngineering Stockroom\n\n\n22kohm Resistor\n\n3\n\nEngineering Stockroom\n\n\n130kohm Resistor\n\n1\n\nEngineering Stockroom\n\n\n1uF Capacitor\n\n1\n\nEngineering Stockroom\n\n\nTotal Cost\n\n\n0"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "E155 Final Project Portfolio Website",
+    "title": "E155 Final Project Portfolio",
     "section": "",
-    "text": "Abstract goes here"
+    "text": "This project implements a near-real-time audio pitch detection system utilizing an electret microphone, amplifier circuits, microcontroller (MCU), FPGA, and a LCD display. The system is designed to capture audio signals and display the dominant pitch of the input. The audio signal is captured by the electret microphone, and amplified to a range suitable for the MCU’s Analog-to-Digital Converter (ADC) peripheral. This digital data is stored by the MCU’s DMA peripheral in a dual buffer system. Once a buffer fills, the signal is processed through a Fast Fourier Transform (FFT) to detect the dominant frequency. The MCU communicates the frequency data to the FPGA through Serial Peripheral Interface (SPI). The FPGA converts the frequency to scientific pitch notation and drives an LCD display along a 10-line parallel interface. Finally, the LCD displays the pitch to the reader in scientific pitch notation (note-octave format)."
   },
   {
     "objectID": "index.html#abstract",
     "href": "index.html#abstract",
-    "title": "E155 Final Project Portfolio Website",
+    "title": "E155 Final Project Portfolio",
     "section": "",
-    "text": "Abstract goes here"
+    "text": "This project implements a near-real-time audio pitch detection system utilizing an electret microphone, amplifier circuits, microcontroller (MCU), FPGA, and a LCD display. The system is designed to capture audio signals and display the dominant pitch of the input. The audio signal is captured by the electret microphone, and amplified to a range suitable for the MCU’s Analog-to-Digital Converter (ADC) peripheral. This digital data is stored by the MCU’s DMA peripheral in a dual buffer system. Once a buffer fills, the signal is processed through a Fast Fourier Transform (FFT) to detect the dominant frequency. The MCU communicates the frequency data to the FPGA through Serial Peripheral Interface (SPI). The FPGA converts the frequency to scientific pitch notation and drives an LCD display along a 10-line parallel interface. Finally, the LCD displays the pitch to the reader in scientific pitch notation (note-octave format)."
   },
   {
     "objectID": "index.html#video-demonstration",
     "href": "index.html#video-demonstration",
-    "title": "E155 Final Project Portfolio Website",
+    "title": "E155 Final Project Portfolio",
     "section": "Video Demonstration",
-    "text": "Video Demonstration\nUpdate Below Video"
+    "text": "Video Demonstration\nSee a short demonstration of our full system below! Check out our full documentation page for a video demonstrating the full musical range of our device, as well as to see other images of our final device."
   },
   {
     "objectID": "index.html#block-diagram",
     "href": "index.html#block-diagram",
-    "title": "E155 Final Project Portfolio Website",
+    "title": "E155 Final Project Portfolio",
     "section": "Block Diagram",
-    "text": "Block Diagram\nBlock Diagram Here"
+    "text": "Block Diagram\nOur block diagram may be seen below. See our full documentation page for a more in depth exploration of our system and its implementation."
   },
   {
-    "objectID": "index.html#table-of-contents",
-    "href": "index.html#table-of-contents",
-    "title": "E155 Final Project Portfolio Website",
-    "section": "Table of Contents",
-    "text": "Table of Contents\nFind the below sections, we can use ?@sec-documentation and these kinds of crosslinks:\n\n?@sec-docs\n?@sec-Pictures\nEtc…\n\nThis repository contains a suggested structure for the final report."
-  },
-  {
-    "objectID": "index.html#portfolio-contents",
-    "href": "index.html#portfolio-contents",
-    "title": "E155 Final Project Portfolio Website",
-    "section": "Portfolio Contents",
-    "text": "Portfolio Contents\nYour portfolio website should include the following items:\n\nAn overview/home page\n\nA 200-word abstract that summarizes what your project does\nA short video which demonstrates your project in operation\nA block diagram of your system\nA table of contents (e.g., links to other resources on the portfolio website)\n\nA main documentation page\n\nA description of the new hardware used by your project\nSchematics for your system\nA link to the Github repository containing the source code for your project\nA complete bill of materials with item name, part number, quantity, unit price, and total price.\n\nAn FPGA design page\n\nA brief summary of the FPGA design\nA block diagram of the HDL you wrote\nAny accompanying documentation necessary to describe its operation (e.g., state transition diagrams). You do not need to cover nitty gritty details like state transition or output logic tables.\n\nAn MCU design page\n\nA brief summary of what the MCU does\nAny diagrams needed to explain the flow of the MCU code\n\nResults\n\nA discussion of the overall performance of the final system\nAny relevant simulation results or oscilloscope traces\nVideos or photos of the final project or any intermediate build steps.\n\nTeam\n\nA list of the team members with a one sentence bio and links to any relevant personal websites or social media presence. As a bonus, add photos here."
-  },
-  {
-    "objectID": "index.html#notes",
-    "href": "index.html#notes",
-    "title": "E155 Final Project Portfolio Website",
-    "section": "Notes",
-    "text": "Notes\n\nDo not upload video files into your Git repo! They are too big. Instead, upload to external video hosting sites (e.g., YouTube or Vimeo) and embed the HTML. You can directly paste the embed HTML code into your Quarto markdown.\nThink of your front page like a pitch. You’re looking to give the reader a quick summary of what your project is and invite them to check it out in more detail.\nHost the portfolio website using Github pages. The most seamless way is to keep all the Quarto source docs inside a docs folder of your project Github repository and run quarto publish from there to render to Github pages. As a reminder, instructions on how to render can be found here."
+    "objectID": "index.html#project-motivation",
+    "href": "index.html#project-motivation",
+    "title": "E155 Final Project Portfolio",
+    "section": "Project Motivation",
+    "text": "Project Motivation\nNot everyone has perfect pitch. That is to say, not everyone can hear a musical tone and tell which one is playing. Is that C3? B4? We have no clue! We want to be able to analyze the sound coming from a piano, a phone, a singer, or a MicroPs speaker. We want our system to be able to track the note in near real time, reading out to the user the note they’re currently hearing or singing. We hope that by doing so, we can improve our own sense of pitch while helping future MicroPs students troubleshoot their digital audio creations in Lab 4.\nFurther, this project gave us practice with understanding and enabling key peripherals on the MCU – the DMA and ADC. Both of these are very common systems in embedded systems and digital design, enabling key functionalities within an MCU that are nearly irreplaceable. Additionally, Fourier Transforms are similarly essential to many audio or RF based projects. We wanted to put our systems engineering knowledge to use while learning more about how these theoretical algorithms get implemented into real hardware."
   }
 ]

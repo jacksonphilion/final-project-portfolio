@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Team – E155 Final Project Portfolio Website</title>
+<title>Team – E155 Final Project Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -71,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.scss">
 </head>
 
-<body class="nav-fixed">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -79,7 +79,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">E155 Final Project Portfolio Website</span>
+    <span class="navbar-title">E155 Final Project Portfolio</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -127,16 +127,18 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#zhian-zhou" id="toc-zhian-zhou" class="nav-link active" data-scroll-target="#zhian-zhou">Zhian Zhou</a></li>
-  <li><a href="#jackson-philion" id="toc-jackson-philion" class="nav-link" data-scroll-target="#jackson-philion">Jackson Philion</a></li>
+  <li><a href="#meet-the-team" id="toc-meet-the-team" class="nav-link active" data-scroll-target="#meet-the-team">Meet the Team</a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -160,13 +162,84 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="zhian-zhou" class="level2">
-<h2 class="anchored" data-anchor-id="zhian-zhou">Zhian Zhou</h2>
-<p>here</p>
-</section>
-<section id="jackson-philion" class="level2">
-<h2 class="anchored" data-anchor-id="jackson-philion">Jackson Philion</h2>
-<p>here</p>
+<section id="meet-the-team" class="level1">
+<h1>Meet the Team</h1>
+<style>
+.team-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.team-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 300px;
+}
+
+.headshot img {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bio h3 {
+  margin: 10px 0;
+}
+
+.social-links a {
+  margin: 5px;
+  text-decoration: none;
+  color: #007acc;
+  font-weight: bold;
+}
+
+.social-links a:hover {
+  text-decoration: underline;
+}
+</style>
+<div class="team-container">
+
+
+  <!-- Jackson Philion, Member 1 -->
+  <div class="team-member">
+    <div class="headshot">
+      <img src="images/jacksonProfile.jpeg" alt="Jackson Philion Headshot">
+    </div>
+    <div class="bio">
+      <h3 class="anchored" data-anchor-id="meet-the-team">Jackson Philion</h3>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/jacksonphilion/">LinkedIn</a>
+        <a href="https://github.com/jacksonphilion/">GitHub</a>
+        <a href="https://jacksonphilion.github.io/hmc-e155-portfolio/">E155 Website</a>
+      </div>
+      <p>Jackson is an electrical engineering student who's passionate about the intersection between hardware engineering and digital design. His favorite part of this project was when the LCD FSM printed its first character out to the screen: "$"</p>
+    </div>
+  </div>
+
+
+  <!-- Zhian Zhou, Member 2 -->
+  <div class="team-member">
+    <div class="headshot">
+      <img src="images/zhianProfile.png" alt="Zhian Zhou Profile Picture">
+    </div>
+    <div class="bio">
+      <h3 class="anchored">Zhian Zhou</h3>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/zhian-zhou-14ba8b325/">LinkedIn</a>
+        <a href="https://github.com/ZhianZ">GitHub</a>
+      </div>
+      <p>Zhian is a senior engineer at Harvey Mudd College who's interested in exploring the world of electrical engineering and robotics.</p>
+    </div>
+  </div>
+
+
+</div>
 
 
 </section>
@@ -264,7 +337,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/jacksonphilion\.github\.io\/final-project-portfolio\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

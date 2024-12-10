@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>E155 Final Project Portfolio Website</title>
+<title>E155 Final Project Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">E155 Final Project Portfolio Website</span>
+    <span class="navbar-title">E155 Final Project Portfolio</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -136,9 +136,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
   <li><a href="#video-demonstration" id="toc-video-demonstration" class="nav-link" data-scroll-target="#video-demonstration">Video Demonstration</a></li>
   <li><a href="#block-diagram" id="toc-block-diagram" class="nav-link" data-scroll-target="#block-diagram">Block Diagram</a></li>
-  <li><a href="#table-of-contents" id="toc-table-of-contents" class="nav-link" data-scroll-target="#table-of-contents">Table of Contents</a></li>
-  <li><a href="#portfolio-contents" id="toc-portfolio-contents" class="nav-link" data-scroll-target="#portfolio-contents">Portfolio Contents</a></li>
-  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
+  <li><a href="#project-motivation" id="toc-project-motivation" class="nav-link" data-scroll-target="#project-motivation">Project Motivation</a></li>
   </ul>
 </nav>
     </div>
@@ -147,7 +145,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">E155 Final Project Portfolio Website</h1>
+<h1 class="title">E155 Final Project Portfolio</h1>
 </div>
 
 
@@ -166,75 +164,22 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="abstract" class="level2">
 <h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
-<p>Abstract goes here</p>
+<p>This project implements a near-real-time audio pitch detection system utilizing an electret microphone, amplifier circuits, microcontroller (MCU), FPGA, and a LCD display. The system is designed to capture audio signals and display the dominant pitch of the input. The audio signal is captured by the electret microphone, and amplified to a range suitable for the MCU’s Analog-to-Digital Converter (ADC) peripheral. This digital data is stored by the MCU’s DMA peripheral in a dual buffer system. Once a buffer fills, the signal is processed through a Fast Fourier Transform (FFT) to detect the dominant frequency. The MCU communicates the frequency data to the FPGA through Serial Peripheral Interface (SPI). The FPGA converts the frequency to scientific pitch notation and drives an LCD display along a 10-line parallel interface. Finally, the LCD displays the pitch to the reader in scientific pitch notation (note-octave format).</p>
 </section>
 <section id="video-demonstration" class="level2">
 <h2 class="anchored" data-anchor-id="video-demonstration">Video Demonstration</h2>
-<p>Update Below Video</p>
-<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/C9rHem4BoUI" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>See a short demonstration of our full system below! Check out our full documentation page for a video demonstrating the full musical range of our device, as well as to see other images of our final device.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/2jBXbJiRAg8" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 </section>
 <section id="block-diagram" class="level2">
 <h2 class="anchored" data-anchor-id="block-diagram">Block Diagram</h2>
-<p>Block Diagram Here</p>
+<p>Our block diagram may be seen below. See our full documentation page for a more in depth exploration of our system and its implementation.</p>
+<p><img src="images/blockDiagram.png" class="img-fluid"></p>
 </section>
-<section id="table-of-contents" class="level2">
-<h2 class="anchored" data-anchor-id="table-of-contents">Table of Contents</h2>
-<p>Find the below sections, we can use <strong>?@sec-documentation</strong> and these kinds of crosslinks:</p>
-<ol type="1">
-<li><strong>?@sec-docs</strong></li>
-<li><strong>?@sec-Pictures</strong></li>
-<li>Etc…</li>
-</ol>
-<p>This repository contains a suggested structure for the final report.</p>
-</section>
-<section id="portfolio-contents" class="level2">
-<h2 class="anchored" data-anchor-id="portfolio-contents">Portfolio Contents</h2>
-<p>Your portfolio website should include the following items:</p>
-<ol type="1">
-<li>An overview/home page
-<ul class="task-list">
-<li><label><input type="checkbox">A 200-word abstract that summarizes what your project does</label></li>
-<li><label><input type="checkbox">A short video which demonstrates your project in operation</label></li>
-<li><label><input type="checkbox">A block diagram of your system</label></li>
-<li><label><input type="checkbox">A table of contents (e.g., links to other resources on the portfolio website)</label></li>
-</ul></li>
-<li>A main documentation page
-<ul class="task-list">
-<li><label><input type="checkbox">A description of the new hardware used by your project</label></li>
-<li><label><input type="checkbox">Schematics for your system</label></li>
-<li><label><input type="checkbox">A link to the Github repository containing the source code for your project</label></li>
-<li><label><input type="checkbox">A complete bill of materials with item name, part number, quantity, unit price, and total price.</label></li>
-</ul></li>
-<li>An FPGA design page
-<ul class="task-list">
-<li><label><input type="checkbox">A brief summary of the FPGA design</label></li>
-<li><label><input type="checkbox">A block diagram of the HDL you wrote</label></li>
-<li><label><input type="checkbox">Any accompanying documentation necessary to describe its operation (e.g., state transition diagrams). You do not need to cover nitty gritty details like state transition or output logic tables.</label></li>
-</ul></li>
-<li>An MCU design page
-<ul class="task-list">
-<li><label><input type="checkbox">A brief summary of what the MCU does</label></li>
-<li><label><input type="checkbox">Any diagrams needed to explain the flow of the MCU code</label></li>
-</ul></li>
-<li>Results
-<ul class="task-list">
-<li><label><input type="checkbox">A discussion of the overall performance of the final system</label></li>
-<li><label><input type="checkbox">Any relevant simulation results or oscilloscope traces</label></li>
-<li><label><input type="checkbox">Videos or photos of the final project or any intermediate build steps.</label></li>
-</ul></li>
-<li>Team
-<ul class="task-list">
-<li><label><input type="checkbox">A list of the team members with a one sentence bio and links to any relevant personal websites or social media presence. As a bonus, add photos here.</label></li>
-</ul></li>
-</ol>
-</section>
-<section id="notes" class="level2">
-<h2 class="anchored" data-anchor-id="notes">Notes</h2>
-<ul>
-<li>Do not upload video files into your Git repo! They are too big. Instead, upload to external video hosting sites (e.g., YouTube or Vimeo) and embed the HTML. You can directly paste the embed HTML code into your Quarto markdown.</li>
-<li>Think of your front page like a pitch. You’re looking to give the reader a quick summary of what your project is and invite them to check it out in more detail.</li>
-<li>Host the portfolio website using Github pages. The most seamless way is to keep all the Quarto source docs inside a <code>docs</code> folder of your project Github repository and run <code>quarto publish</code> from there to render to Github pages. As a reminder, instructions on how to render can be found <a href="https://quarto.org/docs/publishing/github-pages.html#publish-command">here</a>.</li>
-</ul>
+<section id="project-motivation" class="level2">
+<h2 class="anchored" data-anchor-id="project-motivation">Project Motivation</h2>
+<p>Not everyone has perfect pitch. That is to say, not everyone can hear a musical tone and tell which one is playing. Is that C3? B4? We have no clue! We want to be able to analyze the sound coming from a piano, a phone, a singer, or a MicroPs speaker. We want our system to be able to track the note in near real time, reading out to the user the note they’re currently hearing or singing. We hope that by doing so, we can improve our own sense of pitch while helping future MicroPs students troubleshoot their digital audio creations in Lab 4.</p>
+<p>Further, this project gave us practice with understanding and enabling key peripherals on the MCU – the DMA and ADC. Both of these are very common systems in embedded systems and digital design, enabling key functionalities within an MCU that are nearly irreplaceable. Additionally, Fourier Transforms are similarly essential to many audio or RF based projects. We wanted to put our systems engineering knowledge to use while learning more about how these theoretical algorithms get implemented into real hardware.</p>
 
 
 </section>
@@ -332,7 +277,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/jacksonphilion\.github\.io\/final-project-portfolio\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

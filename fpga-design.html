@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>FPGA – E155 Final Project Portfolio Website</title>
+<title>FPGA – E155 Final Project Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">E155 Final Project Portfolio Website</span>
+    <span class="navbar-title">E155 Final Project Portfolio</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -134,9 +134,11 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
-  <li><a href="#lcd-screen" id="toc-lcd-screen" class="nav-link" data-scroll-target="#lcd-screen">LCD Screen</a></li>
-  <li><a href="#hdl-block-diagram" id="toc-hdl-block-diagram" class="nav-link" data-scroll-target="#hdl-block-diagram">HDL Block Diagram</a></li>
-  <li><a href="#state-transition-diagrams" id="toc-state-transition-diagrams" class="nav-link" data-scroll-target="#state-transition-diagrams">State Transition Diagrams</a></li>
+  <li><a href="#top-module" id="toc-top-module" class="nav-link" data-scroll-target="#top-module">Top Module</a></li>
+  <li><a href="#low-level-fsm-module" id="toc-low-level-fsm-module" class="nav-link" data-scroll-target="#low-level-fsm-module">Low Level FSM Module</a></li>
+  <li><a href="#mid-level-controller-module" id="toc-mid-level-controller-module" class="nav-link" data-scroll-target="#mid-level-controller-module">Mid Level Controller Module</a></li>
+  <li><a href="#converter-module" id="toc-converter-module" class="nav-link" data-scroll-target="#converter-module">Converter Module</a></li>
+  <li><a href="#spi-module" id="toc-spi-module" class="nav-link" data-scroll-target="#spi-module">SPI Module</a></li>
   </ul>
 </nav>
     </div>
@@ -164,19 +166,70 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>here</p>
+<p>In order to control the LCD screen, which is described in detail within the New Hardware section of Documentation, we chose to create a system of nested FSMs. The following sections describe both of these FSMs in detail, as well as outlining the HDL modules we used to connect the whole system.</p>
+<p>I first created the following hand drawn block diagram to outline the modules that I would need to control the LCD and SPI system.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/hand-drawn-block.jpeg" class="img-fluid figure-img"></p>
+<figcaption>Hand Drawn HDL Block Diagram</figcaption>
+</figure>
+</div>
+<p>From this design, I identified 5 key modules to make:</p>
+<ul>
+<li>A top module, to contain the oscillator and clock divider parts of the system</li>
+<li>A low level FSM, for the LCD’s control of individual commands</li>
+<li>A mid level controller, to control the order of commands sent to the low level FSM</li>
+<li>A converter module to switch from frequency to pitch notation</li>
+<li>Finally, a SPI module to store the incoming data and regulate the system’s response to incoming SPI transactions.</li>
+</ul>
 </section>
-<section id="lcd-screen" class="level2">
-<h2 class="anchored" data-anchor-id="lcd-screen">LCD Screen</h2>
-<p>here</p>
+<section id="top-module" class="level2">
+<h2 class="anchored" data-anchor-id="top-module">Top Module</h2>
+<p>Overall, our top module had prescribed inputs and outputs. We need this unit to read in the SPI data from the MCU, and output the 10-line parallel interface data to control the LCD. The highest level block diagram, describing all the interconnections between the modules described below, may be seen here:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/topBlockDiagram.png" class="img-fluid figure-img"></p>
+<figcaption>Top Level Block Diagram</figcaption>
+</figure>
+</div>
+<p>Note that this module was almost entirely a connecting module, containing very little logic. Yet, it does have two key things aside from basic module interconnects. Firstly, this module directly contains the call which instantiates the high frequency oscillator (HFOSC, 48 MHz) and adds a clock divider (which outputs a final frequency of 100 kHz). Secondly, this module contains some unpictured debug logic which can be hooked up to any signal at any time to read out the current state of the system for debugging purposes.</p>
 </section>
-<section id="hdl-block-diagram" class="level2">
-<h2 class="anchored" data-anchor-id="hdl-block-diagram">HDL Block Diagram</h2>
-<p>here</p>
+<section id="low-level-fsm-module" class="level2">
+<h2 class="anchored" data-anchor-id="low-level-fsm-module">Low Level FSM Module</h2>
+<p>Our low level FSM module is responsible for directly controlling the data, rs, and enable lines. This module specifies the timing requirements between signals, and contains the programming which ensures that the system initializes properly upon system powerup or reset. In order to accomplish this initialization sequence, we first created a 22 state FSM to control the timings and instructions necessary upon restart. The state diagram is shown in the figure below.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/powerupFSM.jpg" class="img-fluid figure-img"></p>
+<figcaption>Initialization State Diagram in Low Level FSM</figcaption>
+</figure>
+</div>
+<p>In order to track the system timings, we used a main counter and a series of flags that set themselves as the counter reached the appropriate time mark. Each time the state transitioned, or <code>state!==nextstate</code>, the counter and flags all reset to 0. This allowed us to track time in a repeatable and simple way throughout any state we needed to time. Finally, note that the system enters into an idle state. Since this state differed so significantly from the rest of the initialization sequence, we chose to represent it as a separate FSM shown in the figure below. Note, however, that this FSM is a part of the same module as the initialization sequence above.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/idleFSM.jpg" class="img-fluid figure-img"></p>
+<figcaption>Main Idle State Diagram in Low Level FSM</figcaption>
+</figure>
+</div>
+<p>This is the main loop of our low level module, if one considers it like a microcontroller routine. The default state of the system is to powerup and then wait for an incoming instruction to write a new command. However, this fsm only manages the timing between transactions and writes single commands. In order to control which instructions should play in which order, we created a separate mid-level FSM to isolate the system which sends commands from the system which dictates the order in which to send commands.</p>
 </section>
-<section id="state-transition-diagrams" class="level2">
-<h2 class="anchored" data-anchor-id="state-transition-diagrams">State Transition Diagrams</h2>
-<p>here</p>
+<section id="mid-level-controller-module" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-controller-module">Mid Level Controller Module</h2>
+<p>The mid level FSM can be thought of as the director of the low level FSM. This level tells the low level unit what order to send a particular command sequence in. Further, it alone interfaces with the SPI unit, isolating the SPI transactions from the low level LCD architecture. Anything system-specific should happen on this level, allowing the low-level FSM to act like a general-use LCD driver.</p>
+<p>The figure below describes the FSM we designed to accomplish this middling function. Note that it idles in the wait_SPI state until the SPI module signals that a new transaction has been received by setting new_SPI.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/controllerFSM.jpg" class="img-fluid figure-img"></p>
+<figcaption>Mid Level State Transition Diagram</figcaption>
+</figure>
+</div>
+</section>
+<section id="converter-module" class="level2">
+<h2 class="anchored" data-anchor-id="converter-module">Converter Module</h2>
+<p>The converter module is a purely combinational piece of logic which converts, at any given time, the current frequency value stored in the frequency register to a corresponding letter and note. The rest of the timing and system control is handled by the synchronous units in the SPI module and the Controller module.</p>
+</section>
+<section id="spi-module" class="level2">
+<h2 class="anchored" data-anchor-id="spi-module">SPI Module</h2>
+<p>This module handles the SPI data coming from the MCU. It contains a shift register system which adds the incoming sdi input data to a <code>raw_frequency</code> register, and which sends a new batch of data to the true <code>frequency</code> register when a SPI transaction has finished and the Chip Select line goes high. This transaction ending triggers the SPI module to send out the internal signal new_SPI, which communicates with the controller module to trigger a new printing cycle.</p>
 
 
 </section>
@@ -274,7 +327,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/jacksonphilion\.github\.io\/final-project-portfolio\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

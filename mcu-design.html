@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>MCU – E155 Final Project Portfolio Website</title>
+<title>MCU – E155 Final Project Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">E155 Final Project Portfolio Website</span>
+    <span class="navbar-title">E155 Final Project Portfolio</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -133,11 +133,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
-  <li><a href="#new-peripherals" id="toc-new-peripherals" class="nav-link" data-scroll-target="#new-peripherals">New Peripherals</a>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a>
   <ul class="collapse">
-  <li><a href="#adc" id="toc-adc" class="nav-link" data-scroll-target="#adc">ADC</a></li>
-  <li><a href="#dma" id="toc-dma" class="nav-link" data-scroll-target="#dma">DMA</a></li>
+  <li><a href="#dual-buffer-design-for-audio-data-processing" id="toc-dual-buffer-design-for-audio-data-processing" class="nav-link" data-scroll-target="#dual-buffer-design-for-audio-data-processing">Dual Buffer Design for Audio Data Processing</a></li>
   </ul></li>
   <li><a href="#system-diagram" id="toc-system-diagram" class="nav-link" data-scroll-target="#system-diagram">System Diagram</a></li>
   </ul>
@@ -167,22 +165,43 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>The project uses an STM32L432KCU microcontroller to process audio data. To do so, it needs to enable three key elements: the ADC peripheral, the DMA peripheral, and the CMSIS DSP library. To communicate this data with the external LCD driver, the MCU must also interface with its SPI peripheral.</p>
+<section id="adc" class="level4">
+<h4 class="anchored" data-anchor-id="adc">ADC</h4>
+<p>The ADC digitizes the sound waves captured and amplified. The DMA facilitates direct data transfers to the memory without the CPU’s involvement. Using the DMA ensures real-time data acquisition, as is suitable for frequency analysis. To configure the ADC, the ADC clock is enabled through Reset and Clock Control (RCC), and a GPIO pin (PB0) is set to operate in analog input mode. The ADC is calibrated for optimal performance, and configured for 12-bit resolution, 6250 Hz sampling rate, and continuous conversion mode.</p>
 </section>
-<section id="new-peripherals" class="level2">
-<h2 class="anchored" data-anchor-id="new-peripherals">New Peripherals</h2>
-<p>This section describes how we used the new peripherals in our system, and some of the key points that we discovered with each.</p>
-<section id="adc" class="level3">
-<h3 class="anchored" data-anchor-id="adc">ADC</h3>
-<p>here</p>
+<section id="dma" class="level4">
+<h4 class="anchored" data-anchor-id="dma">DMA</h4>
+<p>The DMA is configured to transfer data from the ADC data register to the memory. The DMA clock is enabled through RCC and DMA channel 1 is assigned to handle data transfer. Both memory and peripheral data size are configured as 16 bits for the 12-bit data, and circular mode is disabled to ensure the data in the memory will not be overwritten before frequency analysis is done.</p>
 </section>
-<section id="dma" class="level3">
-<h3 class="anchored" data-anchor-id="dma">DMA</h3>
-<p>here</p>
+<section id="fft" class="level4">
+<h4 class="anchored" data-anchor-id="fft">FFT</h4>
+<p>For frequency analysis, the CMSIS-DSP library is implemented to perform Fast Fourier Transform (FFT) on the audio data. Before performing the FFT, a Hanning window is applied to the data to reduce spectral leakage, improving the accuracy of frequency calculation. The FFT output is analyzed to determine the dominant frequency by identifying the peak magnitude in the frequency spectrum.</p>
+</section>
+<section id="spi" class="level4">
+<h4 class="anchored" data-anchor-id="spi">SPI</h4>
+<p>Finally, the calculated frequency is transmitted to the FPGA via SPI. SPI is configured to transmit the frequency data as a 16-bit value.</p>
+</section>
+<section id="dual-buffer-design-for-audio-data-processing" class="level3">
+<h3 class="anchored" data-anchor-id="dual-buffer-design-for-audio-data-processing">Dual Buffer Design for Audio Data Processing</h3>
+<p>To manage continuous audio data acquiring and processing without interruptions, a dual buffer design is implemented. The design uses two buffers (buffer1 and buffer2) in the SRAM alternatively for DMA data writing and FFT data processing. While DMA writes to one buffer, the other is processed by FFT. This design avoids data loss or overwriting during FFT processing, as the two operations can occur simultaneously and independently.</p>
+<p>Initially, the buffer1 is configured as the target buffer for DMA to write ADC data, while buffer2 is idle. This setup ensures that the system has a clear starting state.</p>
+<p>Once the DMA completes transferring a full buffer of ADC samples, it triggers an interrupt, handled by the DMA1_Channel1_IRQHandler function. In this interrupt service routine, the system performs two critical tasks. First, the interrupt status flag is checked to confirm the transfer completion. This flag is then cleared to allow the system to respond to subsequent DMA interrupts. Second, DMA is temporarily disabled to safely update its memory and control configurations, ensuring no conflicts during buffer switching.</p>
+<p>Before switching buffers, the handler checks if FFT processing has completed on the previously filled buffer. This is done using a flag (FFTReady). If the FFT function has not yet processed the buffer, the interrupt handler exits early, allowing the processing to catch up.</p>
+<p>Once FFT processing is confirmed to be complete, the system alternates the roles of the two buffers. If buffer1 was being used by the DMA to collect data, it is now assigned to the FFT processor, while the DMA begins filling buffer2. Conversely, if buffer2 was the active DMA buffer, it is swapped with buffer1.</p>
+<p>After the buffer switch, the DMA settings are updated to reflect the new buffer being used. The memory address pointer for the DMA is updated to point to the new target buffer (DMAptr). The buffer size counter (DMA1_Channel1-&gt;CNDTR) is reset to ensure the DMA knows how much data to transfer in the next cycle. The ADC overrun flag is cleared to avoid potential data corruption errors, and the DMA channel is re-enabled to resume operation.</p>
+<p>After the buffer switching process, the handler resets the FFTReady flag, indicating that the newly filled buffer is not yet ready for FFT processing.</p>
 </section>
 </section>
 <section id="system-diagram" class="level2">
 <h2 class="anchored" data-anchor-id="system-diagram">System Diagram</h2>
-<p>The draw.io diagram and a brief description here. Maybe call out the parts that we can adjust: the BUFFER_SIZE and ADC divisor, which affect sampling frequency and possible outputs.</p>
+<p>See a diagram of our microcontroller routines in the figure below:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/microcontroller_routines.png" class="img-fluid figure-img"></p>
+<figcaption>Microcontroller Routines</figcaption>
+</figure>
+</div>
 
 
 </section>
@@ -280,7 +299,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/jacksonphilion\.github\.io\/final-project-portfolio\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
