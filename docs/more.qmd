@@ -2,10 +2,21 @@
 title: More
 ---
 
-## All References
+## References
 
-here
+[1]“FPGA to 2-Line Text LCD Interfacing,” Hobbizine.com, 2019. [http://robotics.hobbizine.com/fpgalcd.html](http://robotics.hobbizine.com/fpgalcd.html) (accessed Dec. 10, 2024).
+
+
+[2]www.alldatasheet.com, “HD44780 datasheet(4/59 Pages) HITACHI,” Alldatasheet.com, 2024. [https://www.alldatasheet.com/html-pdf/63673/HITACHI/HD44780/999/4/HD44780.html](https://www.alldatasheet.com/html-pdf/63673/HITACHI/HD44780/999/4/HD44780.html) (accessed Dec. 10, 2024).
+
+[3]“CME-1538-100LB by Same Sky (Formerly CUI Devices) Datasheet | DigiKey,” Digikey.com, 2021. [https://www.digikey.com/en/htmldatasheets/production/749480/0/0/1/cme-1538-100lb](https://www.digikey.com/en/htmldatasheets/production/749480/0/0/1/cme-1538-100lb) (accessed Dec. 10, 2024).
+
+[4]“CMC-6027-32L100 | DigiKey Electronics,” DigiKey Electronics, 2024. [https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909) (accessed Dec. 10, 2024).
+
+[5]“Display Accessories Part Number Description MCCMDB-16SIL,” 2011. Accessed: Dec. 10, 2024. [Online]. Available: [https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf)
+‌
+
 
 ## Acknowledgements
 
-here
+We sincerely thank Prof. Brake, our MicroPs professor, for his invaluable guidance and support.

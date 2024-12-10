@@ -54,7 +54,9 @@ As discussed in our Results section, this microphone turned out to be a poor fit
 
 ### Amplifier Circuit {#sec-amplifier}
 
-here
+The design of our amplifier circuit aims to process the signal from an external microphone and prepare it for further analysis or use in downstream systems. Our circuit, as shown in the schematics, is derived from a similar design used in the E80 lab. The electret microphone CME-1538-100LB generates an output signal that is small (typically in the tens of millivolts) and centered around zero. To optimize this signal for a 0–3.3 V range, we implemented an amplifier circuit with a total gain of approximately 100 while ensuring the output signal remains within the desired range.
+
+Since the small microphone signal needs to be amplified to improve resolution in the 0–3.3 V range, a total gain of 100 is achieved by cascading two amplifier stages, each with a gain of about 10. The first stage introduces an offset to ensure the signal does not rail out due to a lack of a negative voltage supply. The final design of the first stage results in a gain of 10 and a DC offset of anout 1V, so the minimum voltage is 0.9V and the maximum voltage is 1.2V. The second stage further amplifies the signal with a gain of roughly 7 and a negative offset of 5.5V. Thus, the expected output range is from 0.8V to 2.9V.
 
 ## Schematics {#sec-schematics}
 
@@ -98,4 +100,22 @@ All of our source code may be found in our project's github [here](https://githu
 
 ## Bill Of Materials {#sec-bom}
 
-here
+| Item                                     | Part Number          | Quantity | Unit Price | Vendor                 |
+|------------------------------------------|----------------------|----------|------------|------------------------|
+| Electic Microphone                       | CME-1538-100LB       | 1        |            | Engineering Stockroom  |
+| LCD Display                              | MC21605A6W-FPTLW     | 1        |            | Engineering Stockroom  |
+| Nucleo STM32L432KC Microcontroller       | STM32 Nucleo-32      | 1        |            | E155 Kit               |
+| UPDuino v3.1 ICE40 UP5K FPGA             |                      | 1        |            | E155 Kit               |
+| Operational Amplifier                    | MCP601               | 2        |            | Engineering Stockroom  |
+| 10kohm Potentiometer                     |                      | 1        |            | Engineering Stockroom  |
+| 39ohm Resistor                           |                      | 1        |            | Engineering Stockroom  |
+| 150ohm Resistor                          |                      | 1        |            | Engineering Stockroom  |
+| 1kohm Resistor                           |                      | 1        |            | Engineering Stockroom  |
+| 1.3kohm Resistor                         |                      | 1        |            | Engineering Stockroom  |
+| 2.2kohm Resistor                         |                      | 3        |            | Engineering Stockroom  |
+| 4.7kohm Resistor                         |                      | 1        |            | Engineering Stockroom  |
+| 10kohm Resistor                          |                      | 2        |            | Engineering Stockroom  |
+| 22kohm Resistor                          |                      | 3        |            | Engineering Stockroom  |
+| 130kohm Resistor                         |                      | 1        |            | Engineering Stockroom  |
+| 1uF Capacitor                            |                      | 1        |            | Engineering Stockroom  |
+| **Total Cost**                           |                      |          | **0**      |                        |
