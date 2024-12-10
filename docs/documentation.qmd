@@ -1,31 +1,101 @@
 ---
 title: Documentation
+number-sections: true
 ---
 
-## New Hardware
+# Table of Contents
 
-This section contains a list of our new hardware. Each section contains a short descriptions of how we chose the part and where in the system it was used.
+* New Hardware in @sec-new-hardware
+    * LCD Screen in @sec-lcd-screen
+    * Op Amps in @sec-op-amps
+    * Microphone in @sec-microphone
+    * Amplifier Circuit in @sec-amplifier
+* Schematics in @sec-schematics
+* Images and Videos in @sec-images-and-videos
+* Github Breakdown in @sec-github
+* Bill of Materials in @sec-bom
 
-### LCD Screen
+## New Hardware {#sec-new-hardware}
 
-here. Reference to the FPGA design section.
+This section contains a listing of our new hardware. Each new piece is accompanied by a short description of how we chose the part and where in the system it was used. We also include a longer explanation for the most relevant part, the LCD screen.
 
-### Op Amps
+### LCD Screen {#sec-lcd-screen}
+
+The LCD screen was our project's primary "new hardware" addition. Pictured below, we used the MC21605A6W-FPTLW, henceforth referred to as the LCD unit. See the surprisingly helpful datasheet [here](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf), where an effective and brief user guide may be found. This screen has two lines of up to 16 characters each. See the front and back of the LCD unit pictured below:
+
+![Front of LCD unit](images/newLCDfront.jpeg)
+
+![Back of LCD unit](images/newLCDback.jpeg)
+
+Most notably, this LCD unit seems to be built upon the nearly-ubiquitous HD44780 controller from Hitachi, henceforth referred to as the controller. This controller has a very standardized character set, instruction set, and communication interface. The communication protocol is based on an 11-line parallel interface consisting of:
+
+* 8 Data Bits (D7-D0)
+* 1 Enable bit, pulsed high once a transmission is ready to be sent to the controller
+* 1 RW bit, specifying whether the transmission is a read (high) or a write (low) command. Since we intended to only write to the LCD, we tied this bit low.
+* 1 RS bit, selecting whether the transmission is a character write (high) or a controller instruction (low)
+
+
+
+Most critically, the initialization sequence for the controller is laid out plainly by the LCD unit's data sheet. See the initialization flow below, found on page 14 of the [MC21605A6W-FPTLW data sheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/3477/MC21605A6W-FPTLW.pdf):
+
+![Initialization Sequence (see LCD unit datasheet above)](images/initializationFlow.png)
+
+This initialization sequence clearly lays out the required instructions and timing to write to the LCD display. Note that the rs and data write bits should be steady for at least 500 nanoseconds before the enable bit is written high, and 
+
+### Op Amps {#sec-op-amps}
+
+Op Amps are one of the most common circuit elements in an analog circuit. Harvey Mudd students are familiar with op amps through their application in E80: Experimental Engineering and E84: Analog Electronics, and we applied them in our project to create similar differential amplifiers. We chose to use the MCP601 op amp since it is easily accessibly in our lab space, came in a DIP-8 package, and had a single-railed supply which could operate on our 3.3 Volt supply (MCP601 requires 0 and 2.7–6.0 Volt rails). See the datasheet for our part [here](https://ww1.microchip.com/downloads/en/DeviceDoc/21314g.pdf).
+
+### Microphone {#sec-microphone}
+
+Simiarly, Harvey Mudd students used a simple electret condenser microphone with their acoustic work in E80: Experimental Engineering. Given its accessibility, we chose to use the same microphone in our project. Specifically, we used the CME-1538-100LB microphone from Same Sky. The datasheet for our microphone may be found [here](https://www.sameskydevices.com/product/resource/cme-1538-100lb.pdf).
+
+As discussed in our Results section, this microphone turned out to be a poor fit for our project. Our team did not consider that many microphones have a frequency minimum, below which they cannot reliably produce an analog voltage wave output. In our case, this selected microphone lists a minimum frequency of 100 Hz. In practice, we found that the microphone was only capable of reliably reproducing frequencies above 150 Hz. In creating a version two of this device, we would explore replacing the microphone unit with [the CMC-6027-32L100](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMC-6027-32L100/7398909), which claims to be tolerant of sounds as low as 50 Hz. While the reliable frequency limit may be similarly higher, say closer to 100 Hz, this model should still improve the lower range of our readable input values.
+
+### Amplifier Circuit {#sec-amplifier}
 
 here
 
-### Microphone
+## Schematics {#sec-schematics}
 
-here
+Our schematic may be found in @fig-schematic below. It consists of 3 main parts: the E155 development board on the left, the LCD output circuit on the top right, and the microphone and amplification circuits on the bottom right.
 
-## Schematics
+::: {#fig-schematic}
+![](images/schematic.png)
 
-here
+Schematic
+:::
 
-## Github Link
+## Images and Videos {#sec-images-and-videos}
 
-here
+![Finished System](images/finishedSystem2.jpeg)
 
-## Bill Of Materials
+![Device Interior](images/interior.jpeg)
+
+![Protoboard](images/protoboard.jpeg)
+
+![Breadboard System](images/breadboardSystem.jpeg)
+
+{{< video https://youtu.be/taoTp185rs0 >}}
+
+## Github Breakdown {#sec-github}
+
+All of our source code may be found in our project's github [here](https://github.com/ZhianZ/e155-final-project). Note that it is organized as follows:
+
+* `MCU/` which contains:
+    * `src/` which contains our main.c file
+    * `lib/` which contains all of our given, custom, and CMSIS libraries
+    * `segger/` which contains the SEGGER project used to debug and upload our code
+* `FPGA/` which contains:
+    * `finalProject.sv`, an integrated single-file version of all of our FPGA modules.
+    * `radiant_project/` which contains the Lattice Radiant project we used to build, test, and download finalProject.sv
+    * `modelsim_project/` which contains the ModelSim project used to simulate and debug the integrated single-file solution. Note that it contains its own file, `finalProject_sim.sv`, which mirrors the main .sv file but is built for effective simulation with an externally fed clock signal.
+* `notesAndExtras/` which contains:
+    * `demo/` which contains the source files and SEGGER project for our initial 25% completion demonstration. Specifically, this prototype is made to read in an ADC value and print it out to the user
+    * `KiCad/` which contains the KiCad schematic file used to create our schematic above
+    * `simulationCaptures/` which contains the raw screenshot images taken of ModelSim waveforms for our simulated top.sv code, found in:
+    * `simulationFiles/` which contains the deprecated version of top.sv back before we transitioned to a single file system
+
+## Bill Of Materials {#sec-bom}
 
 here

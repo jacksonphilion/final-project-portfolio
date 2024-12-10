@@ -4,41 +4,31 @@ title: "E155 Final Project Portfolio Website"
 
 ## Abstract
 
-Abstract goes here
+This project implements a near-real-time audio pitch detection system utilizing an electret microphone, amplifier circuits, microcontroller (MCU), FPGA, and a LCD display. The system is designed to capture audio signals and display the dominant pitch of the input. The audio signal is captured by the electret microphone, and amplified to a range suitable for the MCU’s Analog-to-Digital Converter (ADC) peripheral. This digital data is stored by the MCU’s DMA  peripheral in a dual buffer system. Once a buffer fills, the signal is processed through a Fast Fourier Transform (FFT) to detect the dominant frequency. The MCU communicates the frequency data to the FPGA through Serial Peripheral Interface (SPI). The FPGA converts the frequency to scientific pitch notation and drives an LCD display along a 10-line parallel interface. Finally, the LCD displays the pitch to the reader in scientific pitch notation (note-octave format).
 
 ## Video Demonstration
 
-Update Below Video
+See a short demonstration of our full system below! Check out our full documentation page for a video demonstrating the full musical range of our device, as well as to see other images of our final device.
 
-{{< video https://youtu.be/C9rHem4BoUI >}}
+{{< video https://youtu.be/2jBXbJiRAg8 >}}
 
 ## Block Diagram
 
-Block Diagram Here
+Our block diagram may be seen below. See our full documentation page for a more in depth exploration of our system and its implementation.
 
-## Table of Contents
+![](images/blockDiagram.png)
 
-Find the below sections, we can use @sec-documentation and these kinds of crosslinks:
+## Project Motivation
 
-1. @sec-docs 
-2. @sec-Pictures
-3. Etc...
+Not everyone has perfect pitch. That is to say, not everyone can hear a musical tone and tell which one is playing. Is that C3? B4? We have no clue! We want to be able to analyze the sound coming from a piano, a phone, a singer, or a MicroPs speaker. We want our system to be able to track the note in near real time, reading out to the user the note they're currently hearing or singing. We hope that by doing so, we can improve our own sense of pitch while helping future MicroPs students troubleshoot their digital audio creations in Lab 4.
 
-
-
-
-
-This repository contains a suggested structure for the final report.
+Further, this project gave us practice with understanding and enabling key peripherals on the MCU – the DMA and ADC. Both of these are very common systems in embedded systems and digital design, enabling key functionalities within an MCU that are nearly irreplaceable. Additionally, Fourier Transforms are similarly essential to many audio or RF based projects. We wanted to put our systems engineering knowledge to use while learning more about how these theoretical algorithms get implemented into real hardware.
 
 ## Portfolio Contents
 
 Your portfolio website should include the following items:
 
 1. An overview/home page
-   - [ ] A 200-word abstract that summarizes what your project does
-   - [ ] A short video which demonstrates your project in operation
-   - [ ] A block diagram of your system
-   - [ ] A table of contents (e.g., links to other resources on the portfolio website)
 2. A main documentation page
    - [ ] A description of the new hardware used by your project
    - [ ] Schematics for your system
